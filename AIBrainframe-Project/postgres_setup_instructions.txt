@@ -1,0 +1,44 @@
+
+PostgreSQL Setup Instructions for AIBrainFrame
+==============================================
+
+Since automatic setup requires elevated privileges, here are manual setup instructions:
+
+1. Connect to PostgreSQL as superuser:
+   sudo -u postgres psql
+
+2. Create the database:
+   CREATE DATABASE aibrainframe_db;
+
+3. Create the user:
+   CREATE USER aibrainframe_user WITH PASSWORD '0320';
+
+4. Grant privileges:
+   GRANT ALL PRIVILEGES ON DATABASE aibrainframe_db TO aibrainframe_user;
+
+   -- For PostgreSQL 15+ you may also need:
+   GRANT ALL ON SCHEMA public TO aibrainframe_user;
+
+5. Exit PostgreSQL:
+   \q
+
+6. Test the connection:
+   psql -h localhost -U aibrainframe_user -d aibrainframe_db
+
+7. Update your .env file to enable PostgreSQL:
+   USE_POSTGRES=true
+
+8. Run the migration script again to create the schema:
+   python migrate_to_postgres.py
+
+Alternative: Using createdb and createuser commands:
+   sudo -u postgres createdb aibrainframe_db
+   sudo -u postgres createuser -P aibrainframe_user
+   sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE aibrainframe_db TO aibrainframe_user;"
+
+Environment Configuration:
+- DB_HOST=localhost
+- DB_NAME=aibrainframe_db
+- DB_USER=aibrainframe_user
+- DB_PASSWORD=0320
+- USE_POSTGRES=true

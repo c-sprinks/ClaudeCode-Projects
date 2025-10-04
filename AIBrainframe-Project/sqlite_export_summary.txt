@@ -1,0 +1,51 @@
+SQLite Data Export Summary
+==================================================
+
+Table: companies
+Columns: company_id, company_name, address, phone, email, subscription_level, is_active, created_at, updated_at
+Records: 0
+
+Table: equipment_types
+Columns: equipment_type_id, type_name, category, description, typical_maintenance_interval, common_issues, troubleshooting_guide, created_at
+Records: 0
+
+Table: users
+Columns: user_id, username, email, password_hash, full_name, phone, role, company_id, is_active, created_at, updated_at
+Records: 1
+
+Table: jobs
+Columns: job_id, job_number, title, description, customer_name, customer_address, customer_phone, assigned_user_id, company_id, priority, status, job_type, scheduled_date, completed_date, estimated_hours, actual_hours, created_at, updated_at
+Records: 1
+
+Table: solutions
+Columns: solution_id, title, problem_description, solution_steps, equipment_type_id, difficulty_level, estimated_time, success_rate, created_by, company_id, is_verified, usage_count, average_rating, created_at, updated_at
+Records: 1
+
+Table: documents
+Columns: document_id, title, description, file_path, file_type, file_size, equipment_type_id, document_category, is_public, company_id, uploaded_by, download_count, created_at, updated_at
+Records: 0
+
+Table: attachments
+Columns: attachment_id, filename, original_filename, file_path, file_size, mime_type, attached_to_table, attached_to_id, uploaded_by, upload_date
+Records: 0
+
+Table: system_logs
+Columns: log_id, user_id, action, table_name, record_id, old_values, new_values, ip_address, user_agent, timestamp
+Records: 0
+
+Table: equipment
+Columns: equipment_id, equipment_name, manufacturer, model_number, equipment_type_id, serial_number, installation_date, location_description, job_id, company_id, status, notes, created_at, updated_at
+Records: 1
+
+Table: conversations
+Columns: conversation_id, user_id, job_id, equipment_id, title, status, ai_model, context_data, started_at, last_activity, ended_at
+Records: 0
+
+Table: job_activities
+Columns: activity_id, job_id, user_id, activity_type, description, equipment_id, solution_id, time_spent, parts_used, notes, activity_date
+Records: 0
+
+Table: conversation_messages
+Columns: message_id, conversation_id, sender_type, message_text, message_metadata, is_solution, confidence_score, timestamp
+Records: 0
+
