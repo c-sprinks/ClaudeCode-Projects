@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AIBrainframe API Test</title>
+</head>
+<body>
+    <h1>AIBrainframe API Test</h1>
+    <div id="status">Testing...</div>
+    <div id="results"></div>
+
+    <script>
+        async function testAPI() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+
+            try {
+                // Test 1: API Root
+                statusDiv.textContent = 'Testing API root...';
+                const rootResponse = await fetch('http://localhost:8000/');
+                const rootData = await rootResponse.json();
+                resultsDiv.innerHTML += `<p>✅ API Root: ${rootData.message}</p>`;
+
+                // Test 2: Login
+                statusDiv.textContent = 'Testing login...';
+                const loginResponse = await fetch('http://localhost:8000/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: 'testtech',
+                        password: 'password123'
+                    })
+                });
+                const loginData = await loginResponse.json();
+                const token = loginData.access_token;
+                resultsDiv.innerHTML += `<p>✅ Login successful: Token obtained</p>`;
+
+                // Test 3: Create Conversation
+                statusDiv.textContent = 'Testing conversation creation...';
+                const convResponse = await fetch('http://localhost:8000/conversations/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        title: 'Web Test Session'
+                    })
+                });
+                const convData = await convResponse.json();
+                resultsDiv.innerHTML += `<p>✅ Conversation created: ID ${convData.conversation_id}</p>`;
+
+                // Test 4: Send Message
+                statusDiv.textContent = 'Testing message sending...';
+                const msgResponse = await fetch(`http://localhost:8000/conversations/${convData.conversation_id}/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        message_text: 'Test message from web interface'
+                    })
+                });
+                const msgData = await msgResponse.json();
+                resultsDiv.innerHTML += `<p>✅ Message sent and AI responded: "${msgData.message_text.substring(0, 50)}..."</p>`;
+
+                statusDiv.textContent = '🎉 All tests passed! Web app is ready to use.';
+                statusDiv.style.color = 'green';
+
+            } catch (error) {
+                statusDiv.textContent = `❌ Test failed: ${error.message}`;
+                statusDiv.style.color = 'red';
+                resultsDiv.innerHTML += `<p>❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        // Run tests when page loads
+        window.onload = testAPI;
+    </script>
+</body>
+</html>

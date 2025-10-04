@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "Bash(psql:*)",
+      "Bash(sudo systemctl status:*)",
+      "Bash(pg_isready:*)",
+      "Bash(sudo:*)",
+      "Bash(source:*)",
+      "Bash(python:*)",
+      "Read(//etc/postgresql/**)",
+      "Bash(python3:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
