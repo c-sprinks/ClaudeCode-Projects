@@ -9,7 +9,9 @@
       "Bash(source:*)",
       "Bash(python:*)",
       "Read(//etc/postgresql/**)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Read(//home/csprinks/ClaudeCode-Projects/**)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
