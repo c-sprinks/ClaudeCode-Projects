@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CertaSite - LBOB Assistant</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 60%, rgba(138, 43, 226, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #0a0a1a 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .lbob-character {
+            position: absolute;
+            top: 60%;
+            left: 5%;
+            transform: translateY(-50%);
+            width: 400px;
+            height: 400px;
+            z-index: 100;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+
+        .lbob-character:hover {
+            transform: scale(1.1);
+        }
+
+        .lbob-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: transparent;
+            border: none;
+            /* Clean transparent image with enhanced effects */
+            filter:
+                brightness(1.1)
+                contrast(1.2)
+                saturate(1.3)
+                drop-shadow(0 0 20px rgba(255, 107, 53, 0.6))
+                drop-shadow(0 0 10px rgba(0, 255, 255, 0.3));
+            transition: all 0.3s ease;
+        }
+
+        .speech-bubble {
+            position: absolute;
+            top: 40%;
+            left: 25%;
+            max-width: 300px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            color: #333;
+        }
+
+        .speech-bubble.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            right: 40px;
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 15px solid rgba(255, 255, 255, 0.95);
+        }
+
+        .chat-interface {
+            position: absolute;
+            top: 50%;
+            right: 10%;
+            transform: translateY(-50%);
+            width: 500px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .chat-title {
+            color: #FF6B35;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .chat-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .chat-input:focus {
+            border-color: #FF6B35;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .send-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #FF6B35, #f5944f);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .welcome-message {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .welcome-title {
+            font-size: 48px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #FF6B35, #f5944f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .welcome-subtitle {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+
+        .login-form {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 107, 53, 0.2);
+            min-width: 400px;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 107, 53, 0.2);
+            border-radius: 12px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #FF6B35;
+            box-shadow: 0 0 10px rgba(255, 107, 53, 0.2);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #FF6B35, #f5944f);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+        }
+
+        .login-title {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .lbob-preview {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+        }
+
+        .lbob-preview img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid #FF6B35;
+            margin-bottom: 10px;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        /* Advanced AI Background Effects */
+        .neural-network {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .neural-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(45deg, #FF6B35, #00FFFF);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+            animation: pulse 3s infinite ease-in-out;
+        }
+
+        .neural-connection {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.3), transparent);
+            animation: dataFlow 4s infinite linear;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        @keyframes dataFlow {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #FF6B35;
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Enhanced glowing effects */
+        .welcome-title {
+            text-shadow:
+                0 0 5px rgba(255, 107, 53, 0.5),
+                0 0 10px rgba(255, 107, 53, 0.3),
+                0 0 15px rgba(255, 107, 53, 0.2),
+                0 0 20px rgba(255, 107, 53, 0.1);
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from {
+                text-shadow:
+                    0 0 5px rgba(255, 107, 53, 0.5),
+                    0 0 10px rgba(255, 107, 53, 0.3),
+                    0 0 15px rgba(255, 107, 53, 0.2);
+            }
+            to {
+                text-shadow:
+                    0 0 10px rgba(255, 107, 53, 0.8),
+                    0 0 20px rgba(255, 107, 53, 0.5),
+                    0 0 30px rgba(255, 107, 53, 0.3),
+                    0 0 40px rgba(255, 107, 53, 0.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const { useState, useEffect } = React;
+        const { createElement: e } = React;
+
+        function LBOBApp() {
+            const [isLoggedIn, setIsLoggedIn] = useState(false);
+            const [username, setUsername] = useState('');
+            const [password, setPassword] = useState('');
+            const [message, setMessage] = useState('');
+            const [showSpeechBubble, setShowSpeechBubble] = useState(false);
+            const [speechText, setSpeechText] = useState('');
+            const [error, setError] = useState('');
+            const [loading, setLoading] = useState(false);
+
+            const handleLogin = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setError('');
+
+                try {
+                    const response = await fetch('http://localhost:8000/users/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        localStorage.setItem('token', data.access_token);
+                        setIsLoggedIn(true);
+                        showLBOBMessage("Welcome! I'm LBOB, your AI building safety assistant. How can I help you today?");
+                    } else {
+                        setError('Invalid credentials');
+                    }
+                } catch (err) {
+                    setError('Login failed. Please try again.');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleLBOBClick = () => {
+                const messages = [
+                    "Hi there! Ready to solve some building safety challenges?",
+                    "I'm here to help with fire protection and security systems!",
+                    "What building safety question can I help you with?",
+                    "Let's make your building safer together!",
+                    "CertaSite building safety at your service!"
+                ];
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                showLBOBMessage(randomMessage);
+            };
+
+            const showLBOBMessage = (text) => {
+                setSpeechText(text);
+                setShowSpeechBubble(true);
+                setTimeout(() => {
+                    setShowSpeechBubble(false);
+                }, 4000);
+            };
+
+            const handleSendMessage = () => {
+                if (!message.trim()) return;
+
+                console.log('Sending message:', message);
+                showLBOBMessage(`I received your message: "${message}". I'm working on connecting to the AI service to help you!`);
+                setMessage('');
+            };
+
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter') {
+                    handleSendMessage();
+                }
+            };
+
+            // Check if already logged in
+            useEffect(() => {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    setIsLoggedIn(true);
+                    setTimeout(() => {
+                        showLBOBMessage("Welcome back! I'm LBOB, ready to help with your building safety needs!");
+                    }, 1000);
+                }
+            }, []);
+
+            if (!isLoggedIn) {
+                return e('div', { className: 'login-form' },
+                    e('h2', { className: 'login-title' }, 'CertaSite Access'),
+                    e('div', { className: 'lbob-preview' },
+                        e('img', { src: '/static/images/LBOBAICharacter_ai.png', alt: 'LBOB Preview' }),
+                        e('div', null, e('strong', null, 'Meet LBOB!'), e('br'), 'Your AI Building Safety Assistant')
+                    ),
+                    error && e('div', { className: 'error' }, error),
+                    e('form', { onSubmit: handleLogin },
+                        e('input', {
+                            type: 'text',
+                            className: 'login-input',
+                            placeholder: 'Username',
+                            value: username,
+                            onChange: (e) => setUsername(e.target.value),
+                            disabled: loading
+                        }),
+                        e('input', {
+                            type: 'password',
+                            className: 'login-input',
+                            placeholder: 'Password',
+                            value: password,
+                            onChange: (e) => setPassword(e.target.value),
+                            disabled: loading
+                        }),
+                        e('button', {
+                            type: 'submit',
+                            className: 'login-button',
+                            disabled: loading
+                        }, loading ? 'Logging in...' : 'Enter LBOB\'s Lair')
+                    )
+                );
+            }
+
+            // Create neural network background
+            const createNeuralNetwork = () => {
+                const nodes = [];
+                const connections = [];
+
+                // Create nodes
+                for (let i = 0; i < 15; i++) {
+                    nodes.push(e('div', {
+                        className: 'neural-node',
+                        key: `node-${i}`,
+                        style: {
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            animationDelay: `${Math.random() * 3}s`
+                        }
+                    }));
+                }
+
+                // Create connections
+                for (let i = 0; i < 8; i++) {
+                    connections.push(e('div', {
+                        className: 'neural-connection',
+                        key: `connection-${i}`,
+                        style: {
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            width: `${50 + Math.random() * 200}px`,
+                            transform: `rotate(${Math.random() * 360}deg)`,
+                            animationDelay: `${Math.random() * 4}s`
+                        }
+                    }));
+                }
+
+                return e('div', { className: 'neural-network' }, ...nodes, ...connections);
+            };
+
+            // Create floating particles
+            const createParticles = () => {
+                const particles = [];
+                for (let i = 0; i < 20; i++) {
+                    particles.push(e('div', {
+                        className: 'particle',
+                        key: `particle-${i}`,
+                        style: {
+                            left: `${Math.random() * 100}%`,
+                            animationDelay: `${Math.random() * 8}s`,
+                            animationDuration: `${6 + Math.random() * 4}s`
+                        }
+                    }));
+                }
+                return e('div', { className: 'floating-particles' }, ...particles);
+            };
+
+            return e('div', null,
+                // Advanced AI Background
+                createNeuralNetwork(),
+                createParticles(),
+
+                // Welcome message
+                e('div', { className: 'welcome-message' },
+                    e('h1', { className: 'welcome-title' }, 'Welcome to LBOB\'s Lair'),
+                    e('p', { className: 'welcome-subtitle' }, 'Your AI Building Safety Assistant is ready to help!')
+                ),
+
+                // LBOB Character
+                e('div', {
+                    className: 'lbob-character',
+                    onClick: handleLBOBClick
+                },
+                    e('img', {
+                        className: 'lbob-image',
+                        src: '/static/images/LBOBAICharacter_ai.png',
+                        alt: 'LBOB - Your AI Safety Assistant'
+                    })
+                ),
+
+                // Speech Bubble
+                e('div', {
+                    className: 'speech-bubble' + (showSpeechBubble ? ' show' : '')
+                },
+                    e('div', { style: { fontWeight: 'bold', color: '#FF6B35', marginBottom: '10px' } }, 'LBOB says:'),
+                    e('div', null, speechText)
+                ),
+
+                // Chat Interface
+                e('div', { className: 'chat-interface' },
+                    e('div', { className: 'chat-title' }, 'Chat with LBOB'),
+                    e('textarea', {
+                        className: 'chat-input',
+                        placeholder: 'Ask LBOB about building safety, fire protection, or security systems...',
+                        value: message,
+                        onChange: (e) => setMessage(e.target.value),
+                        onKeyPress: handleKeyPress,
+                        rows: 3
+                    }),
+                    e('button', {
+                        className: 'send-button',
+                        onClick: handleSendMessage,
+                        disabled: !message.trim()
+                    }, 'Send to LBOB 🚀')
+                )
+            );
+        }
+
+        // Render the app
+        console.log('Rendering LBOB app...');
+        ReactDOM.render(e(LBOBApp), document.getElementById('root'));
+        console.log('LBOB app rendered successfully!');
+    </script>
+</body>
+</html>

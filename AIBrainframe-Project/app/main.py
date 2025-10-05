@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from config.database import get_db, engine
@@ -25,6 +26,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount static files
+app.mount("/static", StaticFiles(directory="assets"), name="static")
+
 # Include routers
 app.include_router(conversations.router)
 app.include_router(users.router)
@@ -35,6 +39,11 @@ app.include_router(companies.router)
 
 @app.get("/")
 async def root():
+    from fastapi.responses import FileResponse
+    return FileResponse("simple_lbob.html")
+
+@app.get("/api")
+async def api_root():
     return {
         "message": "AIBrainFrame API",
         "version": "1.0.0",
