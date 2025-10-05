@@ -1,0 +1,66 @@
+# Environment Variables
+.env
+.env.local
+.env.production
+
+# Python Virtual Environments
+venv/
+aibrainframe_env/
+env/
+.venv/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Database Files
+*.db-journal
+*.sqlite-journal
+
+# Logs
+logs/
+*.log
+
+# IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node Modules (Mobile App)
+mobile-app/AIBrainframeMobile/node_modules/
+mobile-app/AIBrainframeMobile/.expo/
+mobile-app/AIBrainframeMobile/dist/
+
+# React Native
+mobile-app/AIBrainframeMobile/ios/build/
+mobile-app/AIBrainframeMobile/android/build/
+mobile-app/AIBrainframeMobile/android/.gradle/
+
+# Temporary Files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Claude Code Settings (Keep Local)
+.claude/
+
+# Build Artifacts
+build/
+dist/
+*.egg-info/
