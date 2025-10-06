@@ -386,7 +386,7 @@
                 setError('');
 
                 try {
-                    const response = await fetch('http://localhost:8000/users/login', {
+                    const response = await fetch('/users/login', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -458,7 +458,7 @@
                 return e('div', { className: 'login-form' },
                     e('h2', { className: 'login-title' }, 'CertaSite Access'),
                     e('div', { className: 'lbob-preview' },
-                        e('img', { src: '/static/images/LBOBAICharacter_ai.png', alt: 'LBOB Preview' }),
+                        e('img', { src: '/static/images/characters/LBOBAICharacter_ai.png', alt: 'LBOB Preview' }),
                         e('div', null, e('strong', null, 'Meet LBOB!'), e('br'), 'Your AI Building Safety Assistant')
                     ),
                     error && e('div', { className: 'error' }, error),
@@ -559,7 +559,7 @@
                 },
                     e('img', {
                         className: 'lbob-image',
-                        src: '/static/images/LBOBAICharacter_ai.png',
+                        src: '/static/images/characters/LBOBAICharacter_ai.png',
                         alt: 'LBOB - Your AI Safety Assistant'
                     })
                 ),

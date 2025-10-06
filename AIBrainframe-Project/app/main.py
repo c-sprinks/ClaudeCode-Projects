@@ -50,6 +50,16 @@ async def api_root():
         "status": "running"
     }
 
+@app.get("/simple_lbob.html")
+async def simple_lbob():
+    from fastapi.responses import FileResponse
+    return FileResponse("simple_lbob.html")
+
+@app.get("/aibrainframe_web_app.html")
+async def aibrainframe_web_app():
+    from fastapi.responses import FileResponse
+    return FileResponse("aibrainframe_web_app.html")
+
 @app.get("/health")
 async def health_check(db: Session = Depends(get_db)):
     try:
