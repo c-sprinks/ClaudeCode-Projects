@@ -27,9 +27,10 @@ source venv/bin/activate
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 # Test Interfaces
-# http://localhost:8000/simple_lbob.html      (Neural network theme)
-# http://localhost:8000/aibrainframe_web_app.html  (Immersive character)
-# http://localhost:8000/docs                 (API documentation)
+# http://localhost:8000/static/simple_lbob.html      (Neural network theme)
+# http://localhost:8000/static/aibrainframe_web_app.html  (Immersive character)
+# http://localhost:8000/docs                         (API documentation)
+# http://localhost:8000/dev-tools/test_api.html      (API testing interface)
 ```
 
 ---
@@ -96,9 +97,9 @@ Reference documentation and project specifications:
 - **CORS**: Configured for web and mobile access
 
 ### **Frontend Interfaces**
-- **Neural Network Interface**: `simple_lbob.html` - Advanced AI effects
-- **Immersive Character Interface**: `aibrainframe_web_app.html` - Full LBOB experience
-- **API Testing Interface**: `test_api.html` - Development testing tool
+- **Neural Network Interface**: `static/simple_lbob.html` - Advanced AI effects
+- **Immersive Character Interface**: `static/aibrainframe_web_app.html` - Full LBOB experience
+- **API Testing Interface**: `dev-tools/test_api.html` - Development testing tool
 
 ### **Mobile Application**
 - **Framework**: React Native with TypeScript
@@ -108,8 +109,9 @@ Reference documentation and project specifications:
 
 ### **Character Assets**
 - **Main Character**: `assets/images/LBOBAICharacter_ai.png` - AI-processed transparent LBOB
-- **3D Model**: `model.glb` - 3D LBOB model for future integration
+- **3D Model**: `assets/models/model.glb` - 3D LBOB model for future integration
 - **Development Assets**: Screenshots, reference images, development iterations
+- **Database**: `data/aibrainframe.db` - SQLite database with test users
 
 ---
 
