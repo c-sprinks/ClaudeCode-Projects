@@ -1,88 +1,61 @@
-# NeoTrace OSINT Suite - Python Dependencies
+# InspectorBrain - Advanced OSINT TUI Application
 # Core Framework
-textual>=0.40.0
-urwid>=2.1.2
-pyqt6>=6.5.0
-rich>=13.0.0
+textual>=0.41.0           # Advanced TUI framework
+rich>=13.0.0              # Terminal formatting and rendering
+fastapi>=0.104.0          # Internal service architecture
+pydantic>=2.5.0           # Data validation and configuration
+
+# Database & Persistence
+sqlalchemy>=2.0.0         # Database ORM with async support
+aiosqlite>=0.19.0         # Async SQLite support
+alembic>=1.13.0           # Database migrations
 
 # AI Integration
-ollama>=0.1.0
-langchain-ollama>=0.1.0
-langchain>=0.1.0
+ollama>=0.1.0             # Local LLM integration
+langchain>=0.1.0          # AI tool chaining
+langchain-ollama>=0.1.0   # Ollama LangChain integration
 
-# OSINT Modules
-sherlock-project>=0.14.0
-phoneinfoga>=2.0.0
-spiderfoot>=4.0
-requests>=2.31.0
-beautifulsoup4>=4.12.0
-
-# Audio/Voice (Optional)
-vosk>=0.3.45
-pyaudio>=0.2.11
-pyttsx3>=2.90
-
-# Development & Testing
-pytest>=7.4.0
-pytest-asyncio>=0.21.0
-pytest-mock>=3.11.0
-
-# Packaging & Distribution
-pyinstaller>=5.13.0
+# Networking & OSINT (Custom Modules - NO Third-Party Tools)
+httpx>=0.25.0             # Async HTTP client
+aiohttp>=3.9.0            # Alternative async HTTP client
+beautifulsoup4>=4.12.0    # HTML parsing
+requests>=2.31.0          # Synchronous HTTP (fallback)
+python-whois>=0.8.0       # Domain registration analysis
+phonenumbers>=8.13.0      # Phone number processing
+dnspython>=2.4.0          # DNS queries
 
 # Utilities
-click>=8.1.0
-colorama>=0.4.6
-python-dotenv>=1.0.0
-pydantic>=2.0.0
-httpx>=0.24.0
+asyncio-throttle>=1.0.2   # Rate limiting for API calls
+python-dotenv>=1.0.0      # Environment configuration
+loguru>=0.7.0             # Advanced logging
+typer>=0.9.0              # CLI argument parsing
+click>=8.1.0              # Command line interface
+python-dateutil>=2.8.0    # Date/time utilities
 
-# Image Processing (for future features)
-pillow>=10.0.0
-opencv-python-headless>=4.8.0
+# Development & Testing
+pytest>=7.4.0            # Testing framework
+pytest-asyncio>=0.21.0   # Async test support
+black>=23.0.0             # Code formatting
+mypy>=1.7.0               # Type checking
+pre-commit>=3.5.0         # Git hooks
+coverage>=7.3.0           # Test coverage
 
 # Data Export
-pandas>=2.0.0
-openpyxl>=3.1.0
-fpdf2>=2.7.0
+pandas>=2.0.0             # Data manipulation
+openpyxl>=3.1.0           # Excel export
+fpdf2>=2.7.0              # PDF generation
 
 # Security & Encryption
-cryptography>=41.0.0
-paramiko>=3.3.0
+cryptography>=41.0.0      # Encryption utilities
+paramiko>=3.3.0           # SSH connections (for advanced features)
 
 # System Integration
-psutil>=5.9.0
-keyboard>=0.13.5
-pynput>=1.7.6
+psutil>=5.9.0             # System monitoring
+aiofiles>=23.0.0          # Async file operations
 
-# Network Tools
-python-nmap>=0.7.1
-scapy>=2.5.0
+# Optional: Enhanced Features
+pyperclip>=1.8.0          # Clipboard integration
+keyboard>=0.13.0          # Hotkey support (for "Go-Go-Gadget" commands)
 
-# Additional OSINT Libraries
-tweepy>=4.14.0           # Twitter API integration
-phonenumbers>=8.13.0     # Phone number parsing
-python-whois>=0.8.0      # Domain WHOIS lookups
-shodan>=1.29.0           # Shodan API integration
-censys>=2.2.0            # Censys API integration
-
-# Database (for caching and results)
-sqlite3                  # Built-in Python module
-sqlalchemy>=2.0.0        # ORM for database operations
-
-# Configuration Management
-configparser>=5.3.0      # Built-in Python module
-toml>=0.10.2             # TOML configuration files
-
-# Async Support
-asyncio                  # Built-in Python module
-aiohttp>=3.8.0          # Async HTTP client
-aiofiles>=23.0.0        # Async file operations
-
-# Logging & Monitoring
-loguru>=0.7.0           # Advanced logging
-sentry-sdk>=1.30.0      # Error tracking (optional)
-
-# Documentation Generation
-sphinx>=7.1.0          # Documentation generation
-sphinx-rtd-theme>=1.3.0 # ReadTheDocs theme
+# Inspector Gadget Theme Assets
+colorama>=0.4.6           # Cross-platform colored terminal text
