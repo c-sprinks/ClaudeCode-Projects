@@ -28,7 +28,14 @@
       "Read(//tmp/**)",
       "WebFetch(domain:oshikoi.io)",
       "WebSearch",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(ssh:*)",
+      "Bash(sshpass -p '0320' ssh csprinks@192.168.1.70 'pwd && hostname && whoami')",
+      "Bash(sshpass -p '0320' ssh csprinks@192.168.1.70 'cd ClaudeCode-Projects/AIBrainframe-Project && git status')",
+      "Bash(ip addr:*)",
+      "Bash(sshpass -p '0320' ssh csprinks@192.168.1.127 'pwd && hostname && whoami')"
     ],
     "deny": [],
     "ask": []
