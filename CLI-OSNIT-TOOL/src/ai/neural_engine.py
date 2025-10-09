@@ -780,5 +780,84 @@ class NeuralFoundationEngine:
             "time_horizon": "6_months"
         }
 
+    async def analyze_query(self, query: str) -> Dict[str, Any]:
+        """
+        Analyze a natural language query to extract entities and intent.
+
+        This is Brain's natural language understanding capability.
+        """
+
+        # Simple entity extraction using regex patterns
+        entities = []
+
+        # Email patterns
+        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        emails = re.findall(email_pattern, query)
+        entities.extend([{'type': 'email', 'value': email} for email in emails])
+
+        # Domain patterns
+        domain_pattern = r'\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}\b'
+        domains = re.findall(domain_pattern, query)
+        # Filter out emails from domains
+        domains = [d for d in domains if d not in ' '.join(emails)]
+        entities.extend([{'type': 'domain', 'value': domain} for domain in domains])
+
+        # Username patterns (simple heuristic)
+        username_indicators = ['username', 'user', 'account', 'profile']
+        if any(indicator in query.lower() for indicator in username_indicators):
+            words = query.split()
+            for i, word in enumerate(words):
+                if word.lower() in username_indicators and i + 1 < len(words):
+                    potential_username = words[i + 1].strip('.,!?')
+                    if potential_username and not any(char in potential_username for char in '@.'):
+                        entities.append({'type': 'username', 'value': potential_username})
+
+        # Intent classification
+        intent = self._classify_intent(query)
+
+        # Confidence based on entity extraction success
+        confidence = 0.5 + (len(entities) * 0.1)
+        confidence = min(confidence, 0.95)
+
+        return {
+            'entities': entities,
+            'intent': intent,
+            'confidence': confidence,
+            'query_type': self._determine_query_type(query, entities),
+            'complexity': len(entities) + len(query.split()),
+            'original_query': query
+        }
+
+    def _classify_intent(self, query: str) -> str:
+        """Classify the intent of a query"""
+        query_lower = query.lower()
+
+        # Investigation intents
+        if any(word in query_lower for word in ['investigate', 'research', 'analyze', 'find', 'discover']):
+            return 'investigate'
+        elif any(word in query_lower for word in ['email', 'emails', 'corporate', 'company']):
+            return 'email_analysis'
+        elif any(word in query_lower for word in ['username', 'user', 'account', 'profile']):
+            return 'username_analysis'
+        elif any(word in query_lower for word in ['domain', 'website', 'site']):
+            return 'domain_analysis'
+        else:
+            return 'general_inquiry'
+
+    def _determine_query_type(self, query: str, entities: List[Dict]) -> str:
+        """Determine the primary type of query based on entities and content"""
+        if any(entity['type'] == 'email' for entity in entities):
+            return 'email_focused'
+        elif any(entity['type'] == 'domain' for entity in entities):
+            return 'domain_focused'
+        elif any(entity['type'] == 'username' for entity in entities):
+            return 'username_focused'
+        elif any(word in query.lower() for word in ['email', 'corporate', 'company']):
+            return 'email_investigation'
+        elif any(word in query.lower() for word in ['username', 'user', 'account']):
+            return 'username_investigation'
+        else:
+            return 'general_osint'
+
 # Global neural engine instance
 neural_engine = NeuralFoundationEngine()

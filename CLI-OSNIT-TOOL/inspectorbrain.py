@@ -380,15 +380,99 @@ def domain(
 @app.command()
 def ai(
     query: str = typer.Argument(..., help="Natural language OSINT query"),
+    execute: bool = typer.Option(False, "--execute", "-x", help="Execute the investigation plan"),
     model: Optional[str] = typer.Option("llama3.1", "--model", "-m", help="AI model to use")
 ):
-    """🤖 Go-Go-Gadget AI Analysis! Natural language OSINT queries"""
-    console.print(f"[green]🤖 Go-Go-Gadget AI Analysis![/green]")
+    """🧠 Go-Go-Gadget Brain Analysis! Natural language OSINT queries with AI intelligence"""
+    console.print(f"[green]🧠 Go-Go-Gadget Brain Analysis![/green]")
     console.print(f"[blue]Query:[/blue] {query}")
+    console.print(f"[yellow]Brain Mode:[/yellow] {'Active' if settings.brain_mode else 'Passive'}")
 
-    # TODO: Implement AI query processing
-    console.print("[yellow]⚠️  AI integration module under development[/yellow]")
-    console.print("[dim]This will process natural language queries and route to appropriate tools[/dim]")
+    async def run_brain_analysis():
+        from src.ai.brain import brain
+
+        # Brain thinks about the query
+        console.print(f"[yellow]Status:[/yellow] Brain is thinking...")
+        with Progress(SpinnerColumn(), TextColumn("[yellow]Brain analyzing query...")) as progress:
+            task = progress.add_task("thinking", total=None)
+            investigation_plan = await brain.think_about_query(query)
+            progress.update(task, completed=100)
+
+        # Display Brain's analysis
+        console.print(f"\n[green]✅ Brain's Strategic Analysis Complete![/green]")
+        console.print(f"[blue]Investigation Type:[/blue] {investigation_plan['investigation_type']}")
+        console.print(f"[blue]Complexity:[/blue] {investigation_plan['estimated_complexity']}")
+        console.print(f"[blue]Risk Assessment:[/blue] {investigation_plan['risk_assessment']}")
+
+        console.print(f"\n[yellow]🧠 Brain's Strategic Insight:[/yellow]")
+        console.print(f"[dim]{investigation_plan['brain_insight']}[/dim]")
+
+        console.print(f"\n[yellow]📋 Recommended Modules:[/yellow]")
+        for module in investigation_plan['recommended_modules']:
+            console.print(f"  • {module}")
+
+        console.print(f"\n[yellow]🎯 Analysis Focus:[/yellow]")
+        for focus in investigation_plan['analysis_focus']:
+            console.print(f"  • {focus}")
+
+        # Show Brain's thoughts
+        if investigation_plan.get('brain_thoughts'):
+            console.print(f"\n[yellow]💭 Brain's Thoughts:[/yellow]")
+            for thought in investigation_plan['brain_thoughts']:
+                confidence = f"({thought['confidence']:.0%})" if thought['confidence'] else ""
+                console.print(f"  🧠 {thought['content']} {confidence}")
+
+        # Execute if requested
+        if execute:
+            console.print(f"\n[green]🚀 Executing Brain's Investigation Plan...[/green]")
+
+            # Extract target from query (prioritize domains and emails)
+            import re
+            # Look for domains and emails first (better targeting)
+            email_targets = re.findall(r'[\w\.-]+@[\w\.-]+\.[A-Za-z]{2,}', query)
+            domain_targets = re.findall(r'\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}\b', query)
+
+            # Use entities from Brain's analysis if available
+            entities = investigation_plan.get('entities', [])
+            entity_targets = [e['value'] for e in entities if e['type'] in ['domain', 'email', 'username']]
+
+            # Priority: entities > emails > domains > first meaningful word
+            if entity_targets:
+                target = entity_targets[0]
+            elif email_targets:
+                target = email_targets[0]
+            elif domain_targets:
+                target = domain_targets[0]
+            else:
+                # Fallback to extracting meaningful words (skip common words)
+                words = query.split()
+                skip_words = {'investigate', 'analyze', 'find', 'search', 'for', 'the', 'a', 'an', 'patterns', 'in', 'on'}
+                meaningful_words = [word.strip('.,!?') for word in words if word.lower() not in skip_words and len(word) > 2]
+                target = meaningful_words[0] if meaningful_words else "unknown"
+
+            with Progress(SpinnerColumn(), TextColumn("[yellow]Brain coordinating investigation...")) as progress:
+                task = progress.add_task("investigating", total=None)
+                investigation = await brain.coordinate_investigation(
+                    target,
+                    investigation_plan['investigation_type'],
+                    investigation_plan['recommended_modules']
+                )
+                progress.update(task, completed=100)
+
+            # Display investigation results
+            summary = await brain.get_investigation_summary(investigation)
+            console.print(f"\n{summary}")
+        else:
+            console.print(f"\n[dim]Use --execute to run Brain's investigation plan[/dim]")
+
+        console.print(f"\n{investigation_plan.get('brain_catchphrase', '🧠 Woof!')}")
+
+    try:
+        asyncio.run(run_brain_analysis())
+    except KeyboardInterrupt:
+        console.print("\n[red]Brain analysis interrupted by user[/red]")
+    except Exception as e:
+        console.print(f"\n[red]Brain analysis error: {e}[/red]")
 
 @app.command()
 def config(
