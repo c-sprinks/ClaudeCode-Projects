@@ -1,10 +1,10 @@
-# InspectorBrain - Advanced OSINT Terminal User Interface
+# Inspector-G - Advanced OSINT Terminal User Interface
 
 > **"Go-Go-Gadget Intelligence!"** - The ultimate TUI-based OSINT reconnaissance platform inspired by Inspector Gadget's brilliant partner, Brain the dog.
 
 ## 🧠 Project Vision
 
-InspectorBrain is a cutting-edge Terminal User Interface (TUI) application for Open Source Intelligence gathering. Like Brain the dog who secretly solved Inspector Gadget's cases, InspectorBrain works behind the scenes to uncover digital intelligence through custom-built reconnaissance modules and AI-powered analysis.
+Inspector-G is a cutting-edge Terminal User Interface (TUI) application for Open Source Intelligence gathering. Like Brain the dog who secretly solved Inspector Gadget's cases, Inspector-G works behind the scenes to uncover digital intelligence through custom-built reconnaissance modules and AI-powered analysis.
 
 ### Key Innovation
 - **Advanced TUI Interface**: Built with Textual framework for professional terminal experience
@@ -139,7 +139,7 @@ ollama pull llama3.1
 
 ### Basic Usage
 ```bash
-# Launch InspectorBrain TUI
+# Launch Inspector-G TUI
 python inspectorbrain.py
 
 # Direct command examples
@@ -212,7 +212,7 @@ CLI-OSNIT-TOOL/
 
 ## 🔮 Future Vision
 
-InspectorBrain represents the next evolution of OSINT tooling - combining the analytical power of custom reconnaissance engines with the intelligence of modern AI and the usability of advanced terminal interfaces. Like Brain the dog who worked tirelessly behind the scenes, InspectorBrain quietly gathers and analyzes intelligence to solve complex investigative challenges.
+Inspector-G represents the next evolution of OSINT tooling - combining the analytical power of custom reconnaissance engines with the intelligence of modern AI and the usability of advanced terminal interfaces. Like Brain the dog who worked tirelessly behind the scenes, Inspector-G quietly gathers and analyzes intelligence to solve complex investigative challenges.
 
 ### Expansion Opportunities
 - **Collaborative Intelligence**: Multi-user reconnaissance coordination
@@ -226,4 +226,4 @@ InspectorBrain represents the next evolution of OSINT tooling - combining the an
 **Next Milestone**: Custom Username Reconnaissance Engine Implementation
 **Timeline**: Phase 1 Complete - Phase 2 ready to begin
 
-*"Like Brain the dog who secretly solved Inspector Gadget's cases, InspectorBrain works tirelessly behind the scenes to uncover digital intelligence and solve complex reconnaissance challenges."*
+*"Like Brain the dog who secretly solved Inspector Gadget's cases, Inspector-G works tirelessly behind the scenes to uncover digital intelligence and solve complex reconnaissance challenges."*

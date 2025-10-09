@@ -1,5 +1,5 @@
 """
-InspectorBrain Main TUI Application
+Inspector-G Main TUI Application
 
 The core Textual application that provides the advanced terminal user interface
 with Inspector Gadget theming and professional OSINT capabilities.
@@ -28,16 +28,16 @@ from src.ui.widgets import (
     StatusPanel, WelcomeScreen
 )
 
-class InspectorBrainApp(App[str]):
+class InspectorGApp(App[str]):
     """
-    Main InspectorBrain TUI Application
+    Main Inspector-G TUI Application
 
     Like Brain the dog working behind the scenes, this app provides
     a sophisticated interface for OSINT investigations.
     """
 
     # Application metadata
-    TITLE = "InspectorBrain - Advanced OSINT Suite"
+    TITLE = "Inspector-G - Advanced OSINT Suite"
     SUB_TITLE = "Go-Go-Gadget Intelligence!"
 
     # Key bindings with Inspector Gadget flair
@@ -97,7 +97,7 @@ class InspectorBrainApp(App[str]):
 
     def on_mount(self) -> None:
         """Initialize the application on startup"""
-        logger.info("InspectorBrain TUI started")
+        logger.info("Inspector-G TUI started")
 
         # Display welcome message
         if settings.catchphrases_enabled:
@@ -119,7 +119,7 @@ class InspectorBrainApp(App[str]):
         if settings.wowser_notifications:
             self.notify("Wowser! Until next time!", severity="information")
 
-        logger.info("InspectorBrain TUI closed")
+        logger.info("Inspector-G TUI closed")
         self.exit()
 
     def action_help(self) -> None:
@@ -182,7 +182,7 @@ class HelpScreen(Screen[None]):
     def compose(self) -> ComposeResult:
         yield Container(
             Static(
-                """[bold blue]InspectorBrain Help[/bold blue]
+                """[bold blue]Inspector-G Help[/bold blue]
 
 [yellow]🔍 Go-Go-Gadget Commands:[/yellow]
 • Ctrl+Q: Quit application
@@ -208,7 +208,7 @@ class HelpScreen(Screen[None]):
 • Retro Themes: Classic terminal aesthetics
 
 [dim]Like Brain the dog who secretly solved Inspector Gadget's cases,
-InspectorBrain works behind the scenes to uncover digital intelligence.[/dim]""",
+Inspector-G works behind the scenes to uncover digital intelligence.[/dim]""",
                 id="help_content"
             ),
             id="help_container"
@@ -289,7 +289,7 @@ class GadgetHelpScreen(Screen[None]):
 [blue]"Go-Go-Gadget Investigation!"[/blue]
 
 [yellow]🔍 The Gadget Way of OSINT:[/yellow]
-Like Inspector Gadget's amazing gadgets, InspectorBrain has specialized tools:
+Like Inspector Gadget's amazing gadgets, Inspector-G has specialized tools:
 
 [green]🧠 Brain Mode:[/green] Like Brain the dog, work intelligently behind the scenes
 [green]🔍 Go-Go-Gadget Username Search:[/green] Find usernames across platforms
@@ -303,7 +303,7 @@ Like Inspector Gadget's amazing gadgets, InspectorBrain has specialized tools:
 • "Brain, what do you think?" - AI assistance
 
 [yellow]🎨 M.A.D. Detection:[/yellow]
-InspectorBrain helps identify threats and suspicious activities,
+Inspector-G helps identify threats and suspicious activities,
 just like Inspector Gadget fighting the M.A.D. organization!
 
 [dim]Remember: With great gadgets comes great responsibility.
@@ -313,5 +313,7 @@ Use your powers for good, just like Inspector Gadget![/dim]""",
             id="gadget_help_container"
         )
 
-# Make the main app available for import
-__all__ = ["InspectorBrainApp"]
+# Make the main app available for import with compatibility alias
+InspectorBrainApp = InspectorGApp  # Backward compatibility alias
+
+__all__ = ["InspectorGApp", "InspectorBrainApp"]

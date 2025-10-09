@@ -1,5 +1,5 @@
 """
-InspectorBrain Theme System
+Inspector-G Theme System
 
 Inspector Gadget inspired themes with professional terminal aesthetics
 and nostalgic color schemes that enhance the OSINT experience.
@@ -13,7 +13,7 @@ from rich.theme import Theme as RichTheme
 from src.core.config import settings
 
 class InspectorGadgetTheme:
-    """Inspector Gadget themed styling for InspectorBrain TUI"""
+    """Inspector Gadget themed styling for Inspector-G TUI"""
 
     def __init__(self):
         self.current_scheme = settings.color_scheme
@@ -168,10 +168,10 @@ class InspectorGadgetTheme:
         """Get the main welcome banner"""
         colors = self.get_current_colors()
 
-        banner = f"""[bold {colors['primary']}]🔍 InspectorBrain - Advanced OSINT Suite 🕵️[/bold {colors['primary']}]
+        banner = f"""[bold {colors['primary']}]🔍 Inspector-G - Advanced OSINT Suite 🕵️[/bold {colors['primary']}]
 
 [{colors['accent']}]"Like Brain the dog who secretly solved Inspector Gadget's cases,
-InspectorBrain works behind the scenes to uncover digital intelligence."[/{colors['accent']}]
+Inspector-G works behind the scenes to uncover digital intelligence."[/{colors['accent']}]
 
 [bold {colors['info']}]🔍 Go-Go-Gadget Intelligence! 🕵️[/bold {colors['info']}]"""
 

@@ -1,5 +1,5 @@
 """
-InspectorBrain Custom TUI Widgets
+Inspector-G Custom TUI Widgets
 
 Custom Textual widgets with Inspector Gadget theming and advanced OSINT functionality.
 Each widget represents a different aspect of the intelligence gathering interface.
@@ -32,7 +32,7 @@ class GadgetHeader(Static):
 
         header_text = Text()
         header_text.append("🔍 ", style=f"bold {colors['accent']}")
-        header_text.append("InspectorBrain", style=f"bold {colors['primary']}")
+        header_text.append("Inspector-G", style=f"bold {colors['primary']}")
         header_text.append(" - Advanced OSINT Suite", style=colors['text_muted'])
 
         if self.brain_mode:

@@ -1,5 +1,5 @@
 """
-InspectorBrain Configuration Management
+Inspector-G Configuration Management
 
 Handles all configuration settings, environment variables, and user preferences
 with Inspector Gadget themed defaults and professional enterprise patterns.
@@ -14,23 +14,26 @@ import json
 from loguru import logger
 
 class Settings(BaseSettings):
-    """InspectorBrain application settings with Inspector Gadget theming"""
+    """Inspector-G application settings with Inspector Gadget theming"""
 
     # Application Info
-    app_name: str = "InspectorBrain"
+    app_name: str = "Inspector-G"
     app_version: str = "1.0.0-alpha"
     app_description: str = "Advanced OSINT TUI inspired by Inspector Gadget"
 
     # File Paths
-    config_dir: Path = Field(default_factory=lambda: Path.home() / ".inspectorbrain")
-    config_file: Path = Field(default_factory=lambda: Path.home() / ".inspectorbrain" / "config.json")
-    data_dir: Path = Field(default_factory=lambda: Path.home() / ".inspectorbrain" / "data")
-    cache_dir: Path = Field(default_factory=lambda: Path.home() / ".inspectorbrain" / "cache")
-    logs_dir: Path = Field(default_factory=lambda: Path.home() / ".inspectorbrain" / "logs")
+    config_dir: Path = Field(default_factory=lambda: Path.home() / ".inspector-g")
+    config_file: Path = Field(default_factory=lambda: Path.home() / ".inspector-g" / "config.json")
+    data_dir: Path = Field(default_factory=lambda: Path.home() / ".inspector-g" / "data")
+    cache_dir: Path = Field(default_factory=lambda: Path.home() / ".inspector-g" / "cache")
+    logs_dir: Path = Field(default_factory=lambda: Path.home() / ".inspector-g" / "logs")
 
     # Database Configuration
-    database_url: str = Field(default="sqlite:///~/.inspectorbrain/data/investigations.db")
+    database_url: str = Field(default="sqlite:///~/.inspector-g/data/investigations.db")
     database_echo: bool = False  # Set to True for SQL debugging
+
+    # Debug Configuration
+    debug: bool = False
 
     # AI Configuration
     ollama_base_url: str = "http://localhost:11434"
@@ -43,7 +46,7 @@ class Settings(BaseSettings):
     max_concurrent_requests: int = 10
     request_timeout: int = 30
     rate_limit_delay: float = 1.0  # seconds between requests
-    user_agent: str = "InspectorBrain/1.0 (Educational OSINT Tool)"
+    user_agent: str = "Inspector-G/1.0 (Educational OSINT Tool)"
 
     # Username Reconnaissance
     username_platforms: List[str] = [
@@ -83,7 +86,7 @@ class Settings(BaseSettings):
     # Export Settings
     default_export_format: str = "json"  # json, csv, pdf, markdown
     include_metadata: bool = True
-    export_dir: Path = Field(default_factory=lambda: Path.home() / "Downloads" / "InspectorBrain")
+    export_dir: Path = Field(default_factory=lambda: Path.home() / "Downloads" / "Inspector-G")
 
     # Advanced Features
     enable_voice_commands: bool = False  # Experimental
@@ -93,7 +96,7 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
-        env_prefix = "INSPECTORBRAIN_"
+        env_prefix = "INSPECTOR_G_"
         case_sensitive = False
 
     def __init__(self, **kwargs):
@@ -152,12 +155,12 @@ class Settings(BaseSettings):
     def get_gadget_greeting(self) -> str:
         """Get a random Inspector Gadget themed greeting"""
         if not self.catchphrases_enabled:
-            return "Welcome to InspectorBrain"
+            return "Welcome to Inspector-G"
 
         greetings = [
             "Go-Go-Gadget Intelligence!",
-            "Wowser! Welcome to InspectorBrain!",
-            "Like Brain the dog, InspectorBrain is here to help!",
+            "Wowser! Welcome to Inspector-G!",
+            "Like Brain the dog, Inspector-G is here to help!",
             "Inspector Gadget's finest OSINT tool at your service!",
             "Go-Go-Gadget Investigation Mode!"
         ]

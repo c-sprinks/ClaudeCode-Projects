@@ -1,5 +1,5 @@
 """
-InspectorBrain Database Management
+Inspector-G Database Management
 
 SQLAlchemy-based database setup for storing investigation results,
 user preferences, and OSINT intelligence data.
@@ -85,7 +85,7 @@ class CacheEntry(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class DatabaseManager:
-    """Database manager for InspectorBrain"""
+    """Database manager for Inspector-G"""
 
     def __init__(self):
         self.database_url = self._get_database_url()

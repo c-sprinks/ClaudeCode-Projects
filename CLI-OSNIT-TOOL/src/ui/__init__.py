@@ -1,1 +1,1 @@
-# InspectorBrain UI Module
+# Inspector-G UI Module
