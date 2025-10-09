@@ -6,29 +6,35 @@ with Inspector Gadget theming and professional OSINT capabilities.
 """
 
 from textual.app import App, ComposeResult
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
 from textual.widgets import (
     Header, Footer, Static, Button, Input, DataTable,
-    TabbedContent, TabPane, Log, Tree, Label
+    TabbedContent, TabPane, Log, Tree, Label, Markdown,
+    ProgressBar, LoadingIndicator
 )
 from textual.binding import Binding
 from textual.screen import Screen
-from textual import work
+from textual import work, on
+from textual.reactive import reactive
 from rich.text import Text
 from rich.panel import Panel
 from rich.console import Console
+from rich.align import Align
+from rich.table import Table
 import asyncio
 from typing import Optional, Dict, Any
+from datetime import datetime
 from loguru import logger
 
 from src.core.config import settings
-from src.ui.themes import InspectorGadgetTheme
-from src.ui.widgets import (
-    GadgetHeader, ResultsPanel, InvestigationPanel,
-    StatusPanel, WelcomeScreen
-)
 
-class InspectorGApp(App[str]):
+# Import the professional TUI implementation
+from src.core.professional_tui import ProfessionalInspectorGApp
+
+# Use the professional implementation
+InspectorGApp = ProfessionalInspectorGApp
+
+class LegacyInspectorGApp(App[str]):
     """
     Main Inspector-G TUI Application
 

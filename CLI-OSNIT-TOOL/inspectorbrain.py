@@ -343,6 +343,37 @@ def email(
         if results.get('wowser_factor', 0) > 10:
             console.print(f"[bold green]🎉 Wowser! Extensive email intelligence gathered![/bold green]")
 
+        # Penny's assistance for better understanding
+        try:
+            from src.characters.penny import penny
+
+            # Create visualization data for Penny
+            penny_data = {}
+            if 'predicted_emails' in results and results['predicted_emails']:
+                penny_data['emails'] = results['predicted_emails'][:10]  # First 10 for display
+            if 'employees' in results:
+                penny_data['employees'] = list(results['employees'].keys()) if isinstance(results['employees'], dict) else results['employees']
+
+            if penny_data:
+                console.print(f"\n[blue]💡 Penny's Analysis:[/blue]")
+                explanation = penny.explain_results(penny_data, complexity="beginner")
+                console.print(explanation)
+
+                # Get next step suggestions
+                suggestions = penny.suggest_next_steps(penny_data)
+                if suggestions:
+                    console.print(f"\n[green]🎯 Penny's Suggestions:[/green]")
+                    for suggestion in suggestions[:3]:  # Show first 3 suggestions
+                        console.print(f"• {suggestion}")
+
+                # Offer Penny tip
+                tip = penny.provide_tip("email")
+                console.print(f"\n[yellow]💡 Penny's Tip:[/yellow] {tip.content}")
+
+        except Exception as penny_error:
+            # Don't let Penny errors break the main functionality
+            pass
+
     except KeyboardInterrupt:
         console.print(f"\n[yellow]⚠️ Investigation interrupted by user[/yellow]")
     except Exception as e:
@@ -489,6 +520,364 @@ def config(
         console.print("[yellow]⚠️  Configuration editor under development[/yellow]")
     else:
         console.print("[red]Please specify --show or --edit[/red]")
+
+@app.command()
+def penny(
+    action: str = typer.Argument(help="Action: greet, tip, help, visualize"),
+    data: Optional[str] = typer.Option(None, "--data", help="JSON data for visualization"),
+    complexity: str = typer.Option("beginner", "--complexity", help="Explanation complexity: beginner, intermediate, advanced"),
+    category: str = typer.Option("general", "--category", help="Tip category: general, username, email, domain")
+):
+    """💡 Go-Go-Gadget Penny! User interface assistance and data visualization"""
+
+    from src.characters.penny import penny
+
+    console.print("[bold blue]💡 Penny - Your OSINT Assistant[/bold blue]")
+    console.print("=" * 50)
+
+    if action == "greet":
+        greeting = penny.greet_user()
+        console.print(f"\n[green]{greeting}[/green]")
+
+    elif action == "tip":
+        tip = penny.provide_tip(category)
+        console.print(f"\n[yellow]💡 {tip.title}[/yellow]")
+        console.print(f"[dim]Category: {tip.category} | Difficulty: {tip.difficulty}[/dim]")
+        console.print(f"\n{tip.content}")
+        if tip.example:
+            console.print(f"\n[blue]Example:[/blue] {tip.example}")
+
+    elif action == "help":
+        console.print("\n[green]How I can help you:[/green]")
+        console.print("• 📊 Create visualizations from your OSINT data")
+        console.print("• 💡 Provide helpful tips and techniques")
+        console.print("• 📋 Explain investigation results in simple terms")
+        console.print("• 🎯 Suggest next steps for your investigations")
+        console.print("• 📈 Generate progress reports")
+
+        console.print(f"\n[blue]Available commands:[/blue]")
+        console.print("• penny greet - Get a friendly greeting")
+        console.print("• penny tip --category [general|username|email] - Get helpful tips")
+        console.print("• penny help - Show this help message")
+        console.print("• penny visualize --data '{...}' - Create visualizations")
+
+    elif action == "visualize":
+        if not data:
+            console.print("[red]Please provide data with --data option[/red]")
+            console.print("[dim]Example: penny visualize --data '{\"usernames\": [\"user1\", \"user2\"], \"emails\": [\"test@example.com\"]}'[/dim]")
+            return
+
+        try:
+            import json
+            parsed_data = json.loads(data)
+
+            # Create visualization
+            viz = penny.create_visualization(parsed_data)
+
+            console.print(f"\n[yellow]📊 {viz.title}[/yellow]")
+            console.print(f"[dim]Type: {viz.viz_type}[/dim]")
+            console.print(f"\n{viz.description}")
+
+            # Display formatted data
+            formatted = penny.format_for_display(parsed_data)
+            console.print(f"\n{formatted}")
+
+            # Show insights
+            if viz.insights:
+                console.print(f"\n[blue]💡 Penny's Insights:[/blue]")
+                for insight in viz.insights:
+                    console.print(f"• {insight}")
+
+            # Suggest next steps
+            suggestions = penny.suggest_next_steps(parsed_data)
+            if suggestions:
+                console.print(f"\n[green]🎯 Suggested Next Steps:[/green]")
+                for suggestion in suggestions:
+                    console.print(f"• {suggestion}")
+
+        except json.JSONDecodeError:
+            console.print("[red]Invalid JSON data provided[/red]")
+        except Exception as e:
+            console.print(f"[red]Visualization error: {e}[/red]")
+
+    else:
+        console.print(f"[red]Unknown action: {action}[/red]")
+        console.print("[dim]Available actions: greet, tip, help, visualize[/dim]")
+
+    # Penny's signature
+    console.print(f"\n[yellow]💡 Penny says: \"Always happy to help with your investigations!\"[/yellow]")
+
+@app.command()
+def quimby(
+    action: str = typer.Argument(help="Action: brief, mission, status, list"),
+    target: Optional[str] = typer.Option(None, "--target", help="Investigation target"),
+    case_type: Optional[str] = typer.Option("individual", "--type", help="Case type: individual, corporate, infrastructure, threat_intel"),
+    priority: Optional[str] = typer.Option("normal", "--priority", help="Priority: low, normal, high, critical"),
+    mission_id: Optional[str] = typer.Option(None, "--mission-id", help="Mission ID for status/updates")
+):
+    """👨‍💼 Go-Go-Gadget Chief Quimby! Mission briefings and case management"""
+
+    from src.characters.chief_quimby import chief_quimby, CaseType, MissionPriority
+
+    console.print("[bold blue]👨‍💼 Chief Quimby - Mission Control[/bold blue]")
+    console.print("=" * 50)
+
+    if action == "brief":
+        greeting = chief_quimby.greet_agent("Inspector")
+        console.print(f"\n[yellow]{greeting}[/yellow]")
+
+        console.print(f"\n[green]How Chief Quimby can assist:[/green]")
+        console.print("• 📋 Create mission briefings for OSINT operations")
+        console.print("• 📊 Track investigation progress and status")
+        console.print("• 🎯 Manage multiple cases and priorities")
+        console.print("• 📈 Provide strategic oversight and guidance")
+        console.print("• 📝 Generate detailed mission reports")
+
+        console.print(f"\n[blue]Available commands:[/blue]")
+        console.print("• quimby mission --target [TARGET] --type [TYPE] - Create new mission")
+        console.print("• quimby status --mission-id [ID] - Check mission status")
+        console.print("• quimby list - List all active missions")
+
+    elif action == "mission":
+        if not target:
+            console.print("[red]Target required for mission creation[/red]")
+            console.print("[dim]Example: quimby mission --target john_doe --type individual --priority high[/dim]")
+            return
+
+        try:
+            # Parse case type
+            case_type_map = {
+                "individual": CaseType.INDIVIDUAL,
+                "corporate": CaseType.CORPORATE,
+                "infrastructure": CaseType.INFRASTRUCTURE,
+                "threat_intel": CaseType.THREAT_INTEL,
+                "background": CaseType.BACKGROUND,
+                "surveillance": CaseType.SURVEILLANCE,
+                "forensic": CaseType.FORENSIC
+            }
+            case_enum = case_type_map.get(case_type.lower(), CaseType.INDIVIDUAL)
+
+            # Parse priority
+            priority_map = {
+                "low": MissionPriority.LOW,
+                "normal": MissionPriority.NORMAL,
+                "high": MissionPriority.HIGH,
+                "critical": MissionPriority.CRITICAL,
+                "classified": MissionPriority.CLASSIFIED
+            }
+            priority_enum = priority_map.get(priority.lower(), MissionPriority.NORMAL)
+
+            # Create mission
+            title = f"OSINT Investigation: {target}"
+            mission = chief_quimby.create_mission(
+                title=title,
+                target=target,
+                case_type=case_enum,
+                priority=priority_enum,
+                deadline_hours=24 if priority_enum in [MissionPriority.HIGH, MissionPriority.CRITICAL] else None
+            )
+
+            # Generate initial briefing
+            briefing = chief_quimby.generate_briefing(mission, "initial")
+
+            console.print(f"\n[green]✅ Mission Created: {mission.mission_id}[/green]")
+            console.print(f"[dim]Target: {target} | Type: {case_type} | Priority: {priority}[/dim]")
+
+            # Display briefing
+            formatted_briefing = chief_quimby.format_briefing_display(briefing)
+            console.print(formatted_briefing)
+
+        except Exception as e:
+            console.print(f"[red]Mission creation error: {e}[/red]")
+
+    elif action == "status":
+        if not mission_id:
+            console.print("[red]Mission ID required for status check[/red]")
+            console.print("[dim]Example: quimby status --mission-id MISSION-ABC123[/dim]")
+            return
+
+        status = chief_quimby.get_mission_status(mission_id)
+        if not status:
+            console.print(f"[red]Mission {mission_id} not found[/red]")
+            return
+
+        console.print(f"\n[yellow]📊 Mission Status Report[/yellow]")
+        console.print(f"Mission ID: [blue]{status['mission_id']}[/blue]")
+        console.print(f"Title: {status['title']}")
+        console.print(f"Target: [green]{status['target']}[/green]")
+        console.print(f"Status: [yellow]{status['status'].title()}[/yellow]")
+        console.print(f"Progress: [blue]{status['progress']}%[/blue]")
+        console.print(f"Priority: [red]{status['priority'].upper()}[/red]")
+        console.print(f"Findings: {status['findings_count']} categories")
+        console.print(f"Notes: {status['notes_count']} entries")
+
+        if status['deadline']:
+            console.print(f"Deadline: {status['deadline']}")
+            if status['time_remaining']:
+                time_color = "red" if "OVERDUE" in status['time_remaining'] else "yellow"
+                console.print(f"Time Remaining: [{time_color}]{status['time_remaining']}[/{time_color}]")
+
+    elif action == "list":
+        missions = chief_quimby.list_active_missions()
+
+        if not missions:
+            console.print("[yellow]No active missions found[/yellow]")
+            console.print("[dim]Create a new mission with: quimby mission --target [TARGET][/dim]")
+            return
+
+        console.print(f"\n[yellow]📋 Active Missions ({len(missions)})[/yellow]")
+        console.print("=" * 80)
+
+        for mission in missions:
+            status_color = {
+                "assigned": "blue",
+                "in_progress": "yellow",
+                "completed": "green",
+                "cancelled": "red"
+            }.get(mission['status'], "white")
+
+            priority_emoji = {
+                "low": "📝",
+                "normal": "📋",
+                "high": "⚠️",
+                "critical": "🚨",
+                "classified": "🔒"
+            }.get(mission['priority'], "📋")
+
+            console.print(f"{priority_emoji} [blue]{mission['mission_id']}[/blue] - {mission['title']}")
+            console.print(f"   Target: [green]{mission['target']}[/green] | Status: [{status_color}]{mission['status'].title()}[/{status_color}] | Progress: {mission['progress']}%")
+
+            if mission['time_remaining']:
+                time_color = "red" if "OVERDUE" in mission['time_remaining'] else "yellow"
+                console.print(f"   Deadline: [{time_color}]{mission['time_remaining']}[/{time_color}]")
+
+            console.print("")
+
+    else:
+        console.print(f"[red]Unknown action: {action}[/red]")
+        console.print("[dim]Available actions: brief, mission, status, list[/dim]")
+
+    # Chief Quimby's signature
+    console.print(f"\n[yellow]👨‍💼 Chief Quimby: \"Remember, Inspector - the success of this operation depends on your expertise!\"[/yellow]")
+
+@app.command()
+def mad(
+    action: str = typer.Argument(..., help="Action: analyze, alerts, summary, indicators"),
+    target: Optional[str] = typer.Option(None, "--target", help="Target for threat analysis"),
+    data: Optional[str] = typer.Option(None, "--data", help="JSON data file for analysis"),
+    alert_id: Optional[str] = typer.Option(None, "--alert-id", help="Alert ID for specific operations")
+):
+    """🦹‍♂️ Go-Go-Gadget M.A.D. Detection! Advanced threat analysis and security monitoring"""
+
+    console.print("[bold red]🦹‍♂️ M.A.D. Detection System[/bold red]")
+    console.print("=" * 50)
+
+    try:
+        from src.characters.mad_detection import mad_detection
+
+        if action == "analyze":
+            if not target:
+                console.print("[red]❌ Target required for threat analysis[/red]")
+                console.print("[dim]Usage: python inspectorbrain.py mad analyze --target example.com[/dim]")
+                return
+
+            # Greeting
+            greeting = mad_detection.greet_agent("Inspector-G")
+            console.print(f"[yellow]{greeting}[/yellow]\n")
+
+            console.print(f"[blue]🔍 Analyzing target:[/blue] {target}")
+            console.print("[yellow]🔄 Running comprehensive threat analysis...[/yellow]")
+
+            # Create sample OSINT data for demonstration
+            # In a real implementation, this would come from actual OSINT gathering
+            sample_osint_data = {
+                "target": target,
+                "domains": [target] if "." in target else [f"{target}.com", f"{target}.org"],
+                "emails": [f"admin@{target}", f"contact@{target}"] if "." in target else [f"{target}@gmail.com", f"{target}@yahoo.com"],
+                "usernames": [target.split('.')[0] if "." in target else target]
+            }
+
+            # Perform threat analysis
+            analysis_results = mad_detection.analyze_target(target, sample_osint_data)
+
+            # Display formatted report
+            threat_report = mad_detection.format_threat_report(analysis_results)
+            console.print(threat_report)
+
+        elif action == "alerts":
+            console.print("[blue]🚨 Security Alerts Dashboard[/blue]\n")
+
+            active_alerts = [alert for alert in mad_detection.security_alerts if alert.status == "open"]
+
+            if active_alerts:
+                console.print(f"[red]Active Alerts: {len(active_alerts)}[/red]\n")
+
+                for alert in active_alerts[-5:]:  # Show last 5 alerts
+                    risk_color = "red" if alert.risk_score >= 7.0 else "yellow" if alert.risk_score >= 4.0 else "green"
+                    level_emoji = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🟢", "informational": "ℹ️"}.get(alert.threat_level.value, "❓")
+
+                    console.print(f"{level_emoji} [blue]{alert.alert_id}[/blue] - {alert.title}")
+                    console.print(f"   Risk Score: [{risk_color}]{alert.risk_score:.1f}/10.0[/{risk_color}] | Status: {alert.status}")
+                    console.print(f"   Created: {alert.created_at.strftime('%Y-%m-%d %H:%M')}")
+                    console.print(f"   Indicators: {len(alert.indicators)} identified\n")
+            else:
+                console.print("[green]✅ No active security alerts[/green]")
+
+        elif action == "summary":
+            console.print("[blue]📊 M.A.D. Detection System Summary[/blue]\n")
+
+            summary = mad_detection.get_threat_summary()
+
+            console.print(f"[blue]Total Threat Indicators:[/blue] {summary['total_indicators']}")
+            console.print(f"[red]Active Security Alerts:[/red] {summary['active_alerts']}")
+            console.print(f"[blue]Risk Assessments:[/blue] {summary['total_assessments']}")
+            console.print(f"[orange]High-Risk Indicators:[/orange] {summary['high_risk_indicators']}")
+            console.print(f"[yellow]Recent Alerts (7 days):[/yellow] {summary['recent_alerts']}")
+
+            # System status
+            if summary['active_alerts'] > 0:
+                console.print(f"\n[red]🚨 System Status: {summary['active_alerts']} active threat(s) require attention[/red]")
+            else:
+                console.print(f"\n[green]✅ System Status: All clear - no active threats detected[/green]")
+
+        elif action == "indicators":
+            console.print("[blue]🔍 Threat Indicators Database[/blue]\n")
+
+            if mad_detection.threat_indicators:
+                # Group by threat level
+                by_level = {}
+                for indicator in mad_detection.threat_indicators:
+                    level = indicator.threat_level.value
+                    if level not in by_level:
+                        by_level[level] = []
+                    by_level[level].append(indicator)
+
+                for level in ["critical", "high", "medium", "low", "informational"]:
+                    if level in by_level:
+                        level_emoji = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🟢", "informational": "ℹ️"}[level]
+                        console.print(f"{level_emoji} [bold]{level.upper()}[/bold] ({len(by_level[level])} indicators)")
+
+                        for indicator in by_level[level][:3]:  # Show first 3 per level
+                            console.print(f"   • {indicator.indicator_type.upper()}: {indicator.indicator_value}")
+                            console.print(f"     {indicator.description} (Confidence: {indicator.confidence:.1%})")
+
+                        if len(by_level[level]) > 3:
+                            console.print(f"     ... and {len(by_level[level]) - 3} more")
+                        console.print("")
+            else:
+                console.print("[green]No threat indicators in database[/green]")
+
+        else:
+            console.print(f"[red]Unknown action: {action}[/red]")
+            console.print("[dim]Available actions: analyze, alerts, summary, indicators[/dim]")
+
+    except Exception as e:
+        console.print(f"[red]❌ M.A.D. Detection System error: {str(e)}[/red]")
+        if settings.debug:
+            console.print_exception()
+
+    # M.A.D. Detection signature
+    console.print(f"\n[red]🦹‍♂️ M.A.D. Detection: \"Threat analysis complete. Stay vigilant, Inspector.\"[/red]")
 
 @app.command()
 def version():

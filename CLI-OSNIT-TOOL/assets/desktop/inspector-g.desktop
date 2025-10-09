@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Inspector-G
+Comment=Advanced OSINT Terminal User Interface
+GenericName=OSINT Investigation Tool
+Exec=python3 inspectorbrain.py
+Icon=inspector-g-launcher
+Terminal=false
+StartupNotify=true
+Categories=Network;Security;Development;System;
+Keywords=osint;investigation;intelligence;security;reconnaissance;
+MimeType=application/x-osint-data;
+StartupWMClass=inspector-g

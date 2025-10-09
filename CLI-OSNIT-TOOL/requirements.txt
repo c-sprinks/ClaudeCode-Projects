@@ -24,6 +24,13 @@ python-whois>=0.8.0       # Domain registration analysis
 phonenumbers>=8.13.0      # Phone number processing
 dnspython>=2.4.0          # DNS queries
 
+# Enhanced Web Scraping
+brotli>=1.1.0             # Brotli compression support for faster downloads
+requests-html>=0.10.0     # JavaScript-enabled web scraping
+lxml>=5.0.0               # Fast XML/HTML parser
+lxml_html_clean>=0.4.0    # HTML cleaning for requests-html compatibility
+fake-useragent>=1.4.0     # Realistic user agent rotation
+
 # Utilities
 asyncio-throttle>=1.0.2   # Rate limiting for API calls
 python-dotenv>=1.0.0      # Environment configuration
