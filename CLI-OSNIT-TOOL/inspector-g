@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# Inspector-G - OSINT Terminal Suite
+# Single command to launch 3-pane terminal layout
+#
+
+# Check if kitty is available
+if ! command -v kitty &> /dev/null; then
+    echo "❌ Kitty terminal required. Install with: sudo apt install kitty"
+    exit 1
+fi
+
+# Get script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Create kitty config for our layout
+kitty --session=- << EOF
+layout splits
+launch bash -c "cd '$SCRIPT_DIR' && ./tools/intel-feed.sh"
+launch --location=vsplit bash -c "cd '$SCRIPT_DIR' && ./tools/status-monitor.sh"
+launch --location=hsplit bash -c "cd '$SCRIPT_DIR' && ./tools/main-console.sh"
+EOF
