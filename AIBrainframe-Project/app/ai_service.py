@@ -11,7 +11,7 @@ from datetime import datetime
 class AIService:
     def __init__(self):
         self.ollama_llm = OllamaLLM(
-            model="llama3.1",
+            model="llama3.1:8b",
             base_url="http://localhost:11434"
         )
 
@@ -49,30 +49,29 @@ class AIService:
             # Build context
             context = self._build_context(db, conversation, equipment_id)
 
-            # Create conversation chain with memory
-            memory = ConversationBufferMemory()
-
-            # Add previous messages to memory (last 10 for context)
-            for msg in messages[-10:]:
+            # Build conversation history string
+            history_text = ""
+            for msg in messages[-10:]:  # Last 10 messages for context
                 if msg.sender_type == "user":
-                    memory.chat_memory.add_user_message(msg.message_text)
+                    history_text += f"Human: {msg.message_text}\n"
                 else:
-                    memory.chat_memory.add_ai_message(msg.message_text)
+                    history_text += f"AI Assistant: {msg.message_text}\n"
 
-            # Create conversation chain
-            conversation_chain = ConversationChain(
-                llm=self.ollama_llm,
-                memory=memory,
-                prompt=self._create_prompt_template(context),
-                verbose=False
-            )
+            # Create complete prompt with history
+            full_prompt = self._create_complete_prompt(context, history_text, user_message)
 
-            # Generate response
-            response = conversation_chain.predict(input=user_message)
+            # Generate response using direct LLM invocation (bypasses ConversationChain validation)
+            response = self.ollama_llm.invoke(full_prompt)
 
-            return response
+            return response.strip() if isinstance(response, str) else str(response).strip()
 
         except Exception as e:
+            # Log the actual error for debugging
+            print(f"AI SERVICE ERROR: {str(e)}")
+            print(f"ERROR TYPE: {type(e).__name__}")
+            import traceback
+            traceback.print_exc()
+
             # Fallback response if AI service fails
             return f"I'm here to help with your technical issue. You mentioned: '{user_message}'. Could you provide more specific details about what you're experiencing? For example, what type of equipment are you working with and what specific problem are you encountering?"
 
@@ -139,6 +138,8 @@ class AIService:
         Available Solutions Database:
         {relevant_solutions}
 
+        Current conversation:
+        {history}
         Human: {input}
         AI Assistant:"""
 
@@ -156,7 +157,7 @@ class AIService:
             })
 
         return PromptTemplate(
-            input_variables=["input"],
+            input_variables=["input", "history"],
             template=template,
             partial_variables=partial_variables
         )
@@ -173,6 +174,32 @@ class AIService:
             formatted += f"   Solution: {sol['solution']}\n\n"
 
         return formatted
+
+    def _create_complete_prompt(self, context: dict, history_text: str, user_message: str) -> str:
+        """Create complete prompt with system info, context, history, and current message"""
+
+        prompt = context["system_info"] + "\n\n"
+
+        prompt += "Current Context:\n"
+        prompt += f"- Conversation: {context['conversation_title']}\n"
+
+        if context.get("equipment_info"):
+            prompt += f"- Equipment: {context['equipment_info'].get('name', 'Unknown')} "
+            prompt += f"({context['equipment_info'].get('manufacturer', '')} {context['equipment_info'].get('model', '')})\n"
+            prompt += f"- Location: {context['equipment_info'].get('location', '')}\n"
+
+        prompt += "\nAvailable Solutions Database:\n"
+        prompt += self._format_solutions(context["relevant_solutions"])
+        prompt += "\n"
+
+        if history_text.strip():
+            prompt += "Previous conversation:\n"
+            prompt += history_text + "\n"
+
+        prompt += f"Human: {user_message}\n"
+        prompt += "AI Assistant:"
+
+        return prompt
 
 # Create global AI service instance
 ai_service = AIService()
