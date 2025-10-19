@@ -1,7 +1,4 @@
 from langchain_ollama import OllamaLLM
-from langchain.chains import ConversationChain
-from langchain.memory import ConversationBufferMemory
-from langchain.prompts import PromptTemplate
 from sqlalchemy.orm import Session
 from app.models import Conversation, ConversationMessage, Solution, Equipment
 from typing import Optional, List
@@ -38,7 +35,7 @@ class AIService:
         user_message: str,
         equipment_id: Optional[int] = None
     ) -> str:
-        """Generate AI response using LangChain and context"""
+        """Generate AI response using direct LLM approach"""
 
         try:
             # Get conversation history
@@ -55,7 +52,7 @@ class AIService:
                 if msg.sender_type == "user":
                     history_text += f"Human: {msg.message_text}\n"
                 else:
-                    history_text += f"AI Assistant: {msg.message_text}\n"
+                    history_text += f"LBOB: {msg.message_text}\n"
 
             # Create complete prompt with history
             full_prompt = self._create_complete_prompt(context, history_text, user_message)
@@ -119,62 +116,6 @@ class AIService:
 
         return context
 
-    def _create_prompt_template(self, context: dict) -> PromptTemplate:
-        """Create dynamic prompt template with context"""
-        template = context["system_info"] + """
-
-        Current Context:
-        - Conversation: {conversation_title}
-        """
-
-        if context.get("equipment_info"):
-            template += """
-        - Equipment: {equipment_name} ({equipment_manufacturer} {equipment_model})
-        - Location: {equipment_location}
-            """
-
-        template += """
-
-        Available Solutions Database:
-        {relevant_solutions}
-
-        Current conversation:
-        {history}
-        Human: {input}
-        AI Assistant:"""
-
-        partial_variables = {
-            "conversation_title": context["conversation_title"],
-            "relevant_solutions": self._format_solutions(context["relevant_solutions"])
-        }
-
-        if context.get("equipment_info"):
-            partial_variables.update({
-                "equipment_name": context["equipment_info"].get("name", "Unknown"),
-                "equipment_manufacturer": context["equipment_info"].get("manufacturer", ""),
-                "equipment_model": context["equipment_info"].get("model", ""),
-                "equipment_location": context["equipment_info"].get("location", "")
-            })
-
-        return PromptTemplate(
-            input_variables=["input", "history"],
-            template=template,
-            partial_variables=partial_variables
-        )
-
-    def _format_solutions(self, solutions: List[dict]) -> str:
-        """Format solutions for prompt context"""
-        if not solutions:
-            return "No relevant solutions found in database."
-
-        formatted = ""
-        for i, sol in enumerate(solutions, 1):
-            formatted += f"{i}. {sol['title']}\n"
-            formatted += f"   Problem: {sol['problem']}\n"
-            formatted += f"   Solution: {sol['solution']}\n\n"
-
-        return formatted
-
     def _create_complete_prompt(self, context: dict, history_text: str, user_message: str) -> str:
         """Create complete prompt with system info, context, history, and current message"""
 
@@ -197,9 +138,22 @@ class AIService:
             prompt += history_text + "\n"
 
         prompt += f"Human: {user_message}\n"
-        prompt += "AI Assistant:"
+        prompt += "LBOB:"
 
         return prompt
+
+    def _format_solutions(self, solutions: List[dict]) -> str:
+        """Format solutions for prompt context"""
+        if not solutions:
+            return "No relevant solutions found in database."
+
+        formatted = ""
+        for i, sol in enumerate(solutions, 1):
+            formatted += f"{i}. {sol['title']}\n"
+            formatted += f"   Problem: {sol['problem']}\n"
+            formatted += f"   Solution: {sol['solution']}\n\n"
+
+        return formatted
 
 # Create global AI service instance
 ai_service = AIService()

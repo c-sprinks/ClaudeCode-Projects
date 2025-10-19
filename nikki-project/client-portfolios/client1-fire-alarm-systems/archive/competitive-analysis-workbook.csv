@@ -1,0 +1,68 @@
+Sheet Name: Executive Dashboard
+Metric,Value,Benchmark,Status
+Total Market Players,8,5-10,Normal
+Market Leader Market Share,35-40%,25-30%,Concentrated
+Average Customer Rating,4.2/5,4.0/5,Above Average
+Service Gap Score,6.5/10,7.0/10,Opportunity
+Technology Adoption,3.5/10,5.0/10,Behind Curve
+Pricing Transparency,4.0/10,7.0/10,Major Issue
+
+Sheet Name: Detailed Competitor Matrix
+Company,Founded,Employees,Annual Revenue,Geographic Coverage,Customer Base,Google Rating,Primary Services,Technology Level,Market Position,Customer Satisfaction,Pricing Model,Response Time,Certifications
+Pye-Barker Fire & Safety,1946,8000+,$500M+,National (250+ locations),"National, Local presence",Mixed Reviews,Full Service Fire/Security/Sprinkler,Medium,Market Leader,Below Average,Complex/Hidden Fees,24/7,Multiple
+Silco Fire & Security,Unknown,300,Unknown,Ohio Statewide,"30,000-45,000 OH",4.9/5,Full Fire & Security,Medium,Regional Leader,Excellent,Transparent,24/7,Standard
+R.P. Biederman Co.,1967,7,$1.7M,Cincinnati/Dayton/N.KY,Regional Commercial,Not Available,Fire Alarm Specialist,Low,Veteran Specialist,Unknown,Traditional,Business Hours,Notifier Certified
+Integrated Protection Services,Unknown,Unknown,Unknown,OH/KY/TN,Commercial Focus,Not Available,Multi-System Integration,High,Commercial Specialist,Unknown,Project-Based,24/7,Multiple
+Cincinnati Dayton Fire Protection,Unknown,Unknown,Unknown,Regional Metro,Regional,Not Available,Fire Sprinklers & Alarms,Medium,Regional Player,Unknown,Service-Based,Standard,Certified Techs
+Summit Fire & Security,Unknown,Unknown,Unknown,Cincinnati Area,Regional,Not Available,Fire Protection & Security,Medium,Regional Player,Unknown,Traditional,24/7,Standard
+Megacity Fire & Security,Unknown,Unknown,Unknown,Dayton Area,Local,Not Available,Fire & Security,Low,Local Player,Unknown,Traditional,24/7,Authorized Installer
+ABEL Building Systems,2000,Unknown,Unknown,Cin/Day/Indy,Commercial,Not Available,Commercial Fire Alarm,Medium,Commercial Specialist,Unknown,Project-Based,Business Hours,Standard
+
+Sheet Name: Market Segment Analysis
+Segment,Market Size,Growth Rate,Competition Level,Average Deal Size,Profit Margin,Key Players,Opportunity Score
+Large Commercial,$45M,3-5%,High,$25000-100000,15-20%,Pye-Barker/IPS/Summit,6/10
+Small-Medium Business,$28M,8-12%,Medium,$5000-25000,20-25%,Limited Players,9/10
+Residential,$22M,5-7%,High,$500-5000,10-15%,Pye-Barker/Silco,5/10
+Industrial/Manufacturing,$35M,2-4%,Medium,$50000-250000,18-22%,IPS/Biederman,7/10
+Institutional,$18M,6-8%,Low,$15000-75000,15-18%,Varied,8/10
+
+Sheet Name: Service Analysis
+Service Category,Market Demand,Competition Level,Average Pricing,Profit Margin,Technology Level,Customer Satisfaction,Growth Potential
+Fire Alarm Installation,High,High,$5000-50000,18-22%,Medium,Good,Moderate
+24/7 Monitoring,High,Medium,$25-75/month,35-45%,Medium,Variable,High
+Emergency Response,Critical,Low,$150-300/call,25-30%,Low,Variable,Moderate
+System Maintenance,High,Medium,$200-500/visit,30-40%,Low,Good,Moderate
+Design & Engineering,Medium,Low,$2000-15000,40-50%,High,Good,High
+Technology Integration,Low,Very Low,$10000-100000,45-55%,High,Unknown,Very High
+Training & Consulting,Low,Very Low,$1000-5000,50-60%,Medium,Good,High
+
+Sheet Name: Customer Feedback Analysis
+Company,Communication Score,Pricing Transparency,Technical Quality,Response Time,Overall Satisfaction,Key Complaints,Key Strengths
+Pye-Barker,5/10,4/10,7/10,8/10,5.5/10,Hidden fees/Poor communication,24/7 response/National backing
+Silco,9/10,8/10,8/10,9/10,8.5/10,Limited geographic reach,Excellent service/High satisfaction
+Biederman,7/10,7/10,8/10,6/10,7/10,Limited hours/Small size,Experience/Specialization
+IPS,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Commercial expertise
+Others,6/10,6/10,7/10,7/10,6.5/10,Various,Local presence
+
+Sheet Name: Financial Analysis
+Company,Est. Annual Revenue,Revenue Growth,Profit Margin,Customer Acquisition Cost,Customer Lifetime Value,Market Share,Financial Strength
+Pye-Barker Fire & Safety,$500M+,8-12%,12-15%,$800-1200,$15000-25000,35-40%,Very Strong
+Silco Fire & Security,$25-40M,10-15%,18-22%,$400-600,$12000-20000,15-20%,Strong
+R.P. Biederman Co.,$1.7M,2-5%,15-18%,$300-500,$8000-15000,3-5%,Moderate
+Others Combined,$50-75M,5-8%,10-15%,$500-800,$10000-18000,25-30%,Variable
+
+Sheet Name: Technology Assessment
+Company,System Integration,Mobile Capabilities,Cloud Platform,AI/Predictive,IoT Sensors,Smart Building,Future Ready Score
+Pye-Barker,Medium,Basic,Limited,No,Basic,Limited,4/10
+Silco,Medium,Basic,Limited,No,Basic,Limited,4/10
+Biederman,Low,None,No,No,None,None,2/10
+IPS,High,Medium,Yes,Limited,Medium,Yes,7/10
+Others,Low-Medium,Basic,Limited,No,Basic,Limited,3-4/10
+
+Sheet Name: Market Opportunities
+Opportunity,Market Size,Investment Required,Timeframe,Risk Level,Expected ROI,Competitive Advantage,Implementation Difficulty
+Small Business Focus,$28M,$50-75K,6-12 months,Medium,200-300%,First Mover,Low
+Technology Leadership,$15-25M,$150-200K,12-18 months,Medium-High,250-400%,Differentiation,Medium
+Geographic Expansion,$20-30M,$100-150K,9-15 months,Low-Medium,150-250%,Market Presence,Low
+Service Innovation,$10-20M,$75-125K,6-18 months,Medium,300-500%,Premium Positioning,Medium
+Acquisition Strategy,$40-60M,$500K-2M,18-36 months,High,200-400%,Market Consolidation,High

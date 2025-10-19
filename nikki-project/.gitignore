@@ -1,0 +1,66 @@
+# Nikki's Competitive Research Solutions - Git Ignore
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor and IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary Files
+*.tmp
+*.temp
+*.log
+*.bak
+*.backup
+
+# LibreOffice Lock Files
+.~lock.*#
+
+# Browser Cache
+.cache/
+
+# Node Modules (if any future JavaScript tools)
+node_modules/
+
+# Build Output
+dist/
+build/
+
+# Environment Files
+.env
+.env.local
+.env.production
+
+# Sensitive Data
+*_CONFIDENTIAL*
+*_SECRET*
+*_PRIVATE*
+
+# Large Files
+*.zip
+*.tar.gz
+*.rar
+
+# Personal Notes (keep client data secure)
+notes/
+personal/
+drafts/
+
+# Keep all deliverables and documentation
+!README.md
+!docs/
+!client-portfolios/
+!methodology/
+!templates/
+!business-development/
+!deliverables/
