@@ -19,7 +19,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // const {width, height} = Dimensions.get('window');
-const API_BASE = 'http://192.168.1.247:8000';  // Updated for network testing
+const API_BASE = 'http://108.254.44.67:8000';  // Production LBOB server
 
 // Type definitions
 interface Message {
