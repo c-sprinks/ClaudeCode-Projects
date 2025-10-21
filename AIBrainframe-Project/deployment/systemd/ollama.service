@@ -1,0 +1,43 @@
+[Unit]
+Description=Ollama Large Language Model Service - AI Backend for LBOB
+Documentation=https://ollama.ai/docs
+After=network.target
+Requires=network.target
+
+[Service]
+Type=simple
+User=ollama
+Group=ollama
+WorkingDirectory=/usr/local/bin
+Environment=OLLAMA_HOST=0.0.0.0:11434
+Environment=OLLAMA_MODELS=/var/lib/ollama/models
+ExecStart=/usr/local/bin/ollama serve
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+Restart=always
+RestartSec=15
+TimeoutStartSec=120
+TimeoutStopSec=60
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/ollama
+
+# Resource limits - AI models need memory
+LimitNOFILE=65536
+LimitNPROC=8192
+MemoryMax=8G
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ollama
+
+# Health monitoring
+WatchdogSec=60
+
+[Install]
+WantedBy=multi-user.target

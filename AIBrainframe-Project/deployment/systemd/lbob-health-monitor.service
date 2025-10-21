@@ -1,0 +1,33 @@
+[Unit]
+Description=LBOB AI Health Monitor - 24/7 System Monitoring
+Documentation=https://github.com/c-sprinks/ClaudeCode-Projects/tree/main/AIBrainframe-Project
+After=network.target lbob-api.service ollama.service
+Wants=lbob-api.service ollama.service
+
+[Service]
+Type=simple
+User=csprinks
+Group=csprinks
+WorkingDirectory=/opt/aibrainframe_claude
+Environment=PATH=/opt/aibrainframe_claude/venv/bin
+Environment=PYTHONPATH=/opt/aibrainframe_claude
+ExecStart=/opt/aibrainframe_claude/venv/bin/python3 /opt/aibrainframe_claude/deployment/monitoring/health-monitor.py
+Restart=always
+RestartSec=30
+TimeoutStopSec=10
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Resource limits
+LimitNOFILE=1024
+LimitNPROC=100
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=lbob-health-monitor
+
+[Install]
+WantedBy=multi-user.target

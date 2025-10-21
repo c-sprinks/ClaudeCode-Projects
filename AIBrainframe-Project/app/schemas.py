@@ -178,3 +178,6 @@ class CompanyResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str

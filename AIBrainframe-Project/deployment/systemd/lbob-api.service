@@ -1,0 +1,44 @@
+[Unit]
+Description=LBOB AI FastAPI Service - 24/7 Building Safety Assistant
+Documentation=https://github.com/c-sprinks/ClaudeCode-Projects/tree/main/AIBrainframe-Project
+After=network.target postgresql.service ollama.service
+Wants=postgresql.service ollama.service
+Requires=network.target
+
+[Service]
+Type=simple
+User=csprinks
+Group=csprinks
+WorkingDirectory=/opt/aibrainframe_claude
+Environment=PATH=/opt/aibrainframe_claude/venv/bin:/usr/local/bin:/usr/bin:/bin
+Environment=PYTHONPATH=/opt/aibrainframe_claude
+Environment=VIRTUAL_ENV=/opt/aibrainframe_claude/venv
+ExecStart=/bin/bash -c 'cd /opt/aibrainframe_claude && source venv/bin/activate && uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2'
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+Restart=always
+RestartSec=10
+TimeoutStopSec=30
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/aibrainframe_claude
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=lbob-api
+
+# Health monitoring - disabled due to AI processing time
+# WatchdogSec=30
+
+[Install]
+WantedBy=multi-user.target
+Alias=lbob.service
