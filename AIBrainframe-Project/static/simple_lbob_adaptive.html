@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CertaSite - LBOB Assistant</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 60%, rgba(138, 43, 226, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #0a0a1a 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Main Grid Layout - Adaptive */
+        .main-container {
+            display: grid;
+            grid-template-columns: var(--lbob-width, 60%) 1fr;
+            grid-template-rows: 1fr;
+            height: 100vh;
+            transition: grid-template-columns 0.5s ease;
+        }
+
+        .main-container.initial-state {
+            --lbob-width: 60%;
+        }
+
+        .main-container.expanded-state {
+            --lbob-width: 25%;
+        }
+
+        /* LBOB Container - Left Side */
+        .lbob-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease;
+            padding: 20px;
+        }
+
+        .lbob-character {
+            width: var(--lbob-size, 400px);
+            height: var(--lbob-size, 400px);
+            cursor: pointer;
+            transition: all 0.5s ease;
+            background: transparent;
+            z-index: 100;
+        }
+
+        .main-container.expanded-state .lbob-character {
+            --lbob-size: 200px;
+        }
+
+        .lbob-character:hover {
+            transform: scale(1.05);
+        }
+
+        .lbob-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: transparent;
+            border: none;
+            filter:
+                brightness(1.1)
+                contrast(1.2)
+                saturate(1.3)
+                drop-shadow(0 0 20px rgba(255, 107, 53, 0.6))
+                drop-shadow(0 0 10px rgba(0, 255, 255, 0.3));
+            transition: all 0.3s ease;
+        }
+
+        .welcome-message {
+            margin-top: 20px;
+            text-align: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .main-container.expanded-state .welcome-message {
+            opacity: 0.7;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #FF6B35, #00FFFF, #8A2BE2);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            margin-bottom: 10px;
+        }
+
+        .main-container.expanded-state .welcome-title {
+            font-size: 1.5rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .main-container.expanded-state .welcome-subtitle {
+            font-size: 0.9rem;
+        }
+
+        /* Chat Container - Right Side */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            transition: all 0.5s ease;
+            opacity: var(--chat-opacity, 1);
+        }
+
+        .main-container.initial-state .chat-container {
+            --chat-opacity: 1;
+        }
+
+        /* Job Context Header */
+        .job-context {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            padding: 15px;
+            margin-bottom: 15px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.5s ease;
+        }
+
+        .job-context.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .job-title {
+            color: #FF6B35;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .job-details {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .job-detail {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Job Tabs */
+        .job-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.5s ease;
+        }
+
+        .job-tabs.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .job-tab {
+            background: rgba(255, 107, 53, 0.2);
+            border: 2px solid rgba(255, 107, 53, 0.4);
+            border-radius: 10px;
+            padding: 8px 15px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .job-tab.active {
+            background: rgba(255, 107, 53, 0.4);
+            border-color: #FF6B35;
+        }
+
+        .job-tab:hover {
+            background: rgba(255, 107, 53, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Conversation History */
+        .conversation-history {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 107, 53, 0.2);
+            padding: 20px;
+            margin-bottom: 15px;
+            overflow-y: auto;
+            max-height: 400px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .conversation-history.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .conversation-history::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .conversation-history::-webkit-scrollbar-track {
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 10px;
+        }
+
+        .conversation-history::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #FF6B35, #f5944f);
+            border-radius: 10px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            animation: messageSlideIn 0.3s ease;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            text-align: right;
+        }
+
+        .message.ai {
+            text-align: left;
+        }
+
+        .message-bubble {
+            display: inline-block;
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #FF6B35, #f5944f);
+            color: #fff;
+            border-bottom-right-radius: 6px;
+        }
+
+        .message.ai .message-bubble {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            border-bottom-left-radius: 6px;
+        }
+
+        .message-sender {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 5px;
+        }
+
+        /* Input Area */
+        .input-area {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            padding: 15px;
+            transition: all 0.5s ease;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 107, 53, 0.2);
+            border-radius: 12px;
+            padding: 12px 15px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.4;
+            resize: none;
+            min-height: 24px;
+            max-height: 120px;
+        }
+
+        .message-input:focus {
+            border-color: #FF6B35;
+            box-shadow: 0 0 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .message-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .attachment-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .attachment-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 107, 53, 0.2);
+            border: 2px solid rgba(255, 107, 53, 0.4);
+            border-radius: 50%;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .attachment-btn:hover {
+            background: rgba(255, 107, 53, 0.4);
+            transform: scale(1.1);
+        }
+
+        .send-button {
+            background: linear-gradient(45deg, #FF6B35, #f5944f);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 20px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Loading Dots */
+        .loading-dots {
+            display: inline-block;
+            position: relative;
+            width: 60px;
+            height: 20px;
+        }
+
+        .loading-dots div {
+            position: absolute;
+            top: 50%;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff6b35;
+            animation: loading-dots 1.2s linear infinite;
+        }
+
+        .loading-dots div:nth-child(1) { left: 8px; animation-delay: 0s; }
+        .loading-dots div:nth-child(2) { left: 24px; animation-delay: -0.4s; }
+        .loading-dots div:nth-child(3) { left: 40px; animation-delay: -0.8s; }
+
+        @keyframes loading-dots {
+            0%, 80%, 100% {
+                transform: translateY(-50%) scale(0);
+            }
+            40% {
+                transform: translateY(-50%) scale(1);
+            }
+        }
+
+        /* Background Effects */
+        .neural-network {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        .neural-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, #FF6B35, transparent);
+            border-radius: 50%;
+            animation: nodeFloat 6s ease-in-out infinite;
+        }
+
+        .neural-connection {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.3), transparent);
+            animation: connectionPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes nodeFloat {
+            0%, 100% { opacity: 0.3; transform: translateY(0); }
+            50% { opacity: 0.8; transform: translateY(-20px); }
+        }
+
+        @keyframes connectionPulse {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.6; }
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(0, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: particleFloat 8s linear infinite;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* Login Form Styles */
+        .login-form {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            padding: 40px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .login-title {
+            color: #FF6B35;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+        }
+
+        .lbob-preview {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 107, 53, 0.2);
+        }
+
+        .lbob-preview img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+
+        .login-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .login-input:focus {
+            border-color: #FF6B35;
+            box-shadow: 0 0 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .login-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .login-button {
+            width: 100%;
+            background: linear-gradient(45deg, #FF6B35, #f5944f);
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 53, 0.4);
+        }
+
+        .login-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error {
+            background: rgba(220, 53, 69, 0.2);
+            border: 2px solid rgba(220, 53, 69, 0.5);
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0;
+            color: #ff6b6b;
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-container.initial-state {
+                --lbob-width: 50%;
+            }
+            .main-container.expanded-state {
+                --lbob-width: 30%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+
+            .main-container.expanded-state .lbob-container {
+                height: auto;
+                padding: 10px;
+            }
+
+            .main-container.expanded-state .lbob-character {
+                --lbob-size: 120px;
+            }
+
+            .main-container.expanded-state .welcome-title {
+                font-size: 1.2rem;
+            }
+
+            .job-tabs {
+                flex-wrap: wrap;
+            }
+
+            .job-details {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const { useState, useEffect, useRef } = React;
+        const { createElement: e } = React;
+
+        function LBOBApp() {
+            const [isLoggedIn, setIsLoggedIn] = useState(false);
+            const [username, setUsername] = useState('');
+            const [password, setPassword] = useState('');
+            const [message, setMessage] = useState('');
+            const [error, setError] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [aiLoading, setAiLoading] = useState(false);
+            const [conversationId, setConversationId] = useState(null);
+
+            // New state for adaptive interface
+            const [isExpanded, setIsExpanded] = useState(false);
+            const [messages, setMessages] = useState([]);
+            const [currentJob, setCurrentJob] = useState(null);
+            const [jobTabs, setJobTabs] = useState([]);
+            const [activeJobId, setActiveJobId] = useState(null);
+
+            const messagesEndRef = useRef(null);
+            const messageInputRef = useRef(null);
+
+            const scrollToBottom = () => {
+                messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            };
+
+            useEffect(() => {
+                scrollToBottom();
+            }, [messages]);
+
+            // Auto-resize textarea
+            const handleInputChange = (e) => {
+                setMessage(e.target.value);
+
+                // Auto-resize
+                const textarea = e.target;
+                textarea.style.height = 'auto';
+                textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+            };
+
+            const handleLogin = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setError('');
+
+                try {
+                    const response = await fetch('/users/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        localStorage.setItem('access_token', data.access_token);
+                        setIsLoggedIn(true);
+
+                        // Create initial conversation
+                        const convResponse = await fetch('/conversations/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${data.access_token}`,
+                            },
+                            body: JSON.stringify({ title: 'LBOB Chat Session' })
+                        });
+
+                        if (convResponse.ok) {
+                            const convData = await convResponse.json();
+                            setConversationId(convData.conversation_id);
+                        }
+
+                        // Add welcome message
+                        addMessage('ai', "Welcome! I'm LBOB, your AI building safety assistant. What job are you working on today?");
+                    } else {
+                        setError('Invalid credentials');
+                    }
+                } catch (err) {
+                    setError('Login failed. Please try again.');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const addMessage = (sender, text, jobInfo = null) => {
+                const newMessage = {
+                    id: Date.now(),
+                    sender,
+                    text,
+                    timestamp: new Date(),
+                    jobInfo
+                };
+
+                setMessages(prev => [...prev, newMessage]);
+
+                // Detect job information from AI responses
+                if (sender === 'ai' && jobInfo) {
+                    handleJobDetection(jobInfo);
+                }
+            };
+
+            const handleJobDetection = (jobInfo) => {
+                if (!jobInfo || !jobInfo.job_id) return;
+
+                // Set current job context
+                setCurrentJob(jobInfo);
+                setActiveJobId(jobInfo.job_id);
+
+                // Add job tab if not exists
+                const existingTab = jobTabs.find(tab => tab.job_id === jobInfo.job_id);
+                if (!existingTab) {
+                    const newTab = {
+                        job_id: jobInfo.job_id,
+                        title: jobInfo.title || `Job ${jobInfo.job_number}`,
+                        customer: jobInfo.customer_name,
+                        isActive: true
+                    };
+
+                    setJobTabs(prev => {
+                        const updated = prev.map(tab => ({ ...tab, isActive: false }));
+                        return [...updated, newTab];
+                    });
+                }
+            };
+
+            const parseJobInfoFromResponse = (responseText) => {
+                // Simple job detection patterns - can be enhanced
+                const jobPatterns = [
+                    /working on.*?([A-Z][a-z]+.*?(?:job|inspection|installation))/i,
+                    /job.*?(\w+[-]\d+)/i,
+                    /at\s+([A-Z][a-z\s]+(?:Building|Center|Plaza|Manufacturing))/i
+                ];
+
+                // This is a simplified version - in real implementation,
+                // the AI service would return structured job data
+                for (let pattern of jobPatterns) {
+                    const match = responseText.match(pattern);
+                    if (match) {
+                        return {
+                            job_id: Math.floor(Math.random() * 1000), // Mock ID
+                            title: match[1],
+                            job_number: `FA-2025-${Math.floor(Math.random() * 100)}`,
+                            customer_name: "ABC Manufacturing", // Mock data
+                            customer_address: "1234 Industrial Blvd"
+                        };
+                    }
+                }
+                return null;
+            };
+
+            const handleSendMessage = async () => {
+                if (!message.trim()) return;
+
+                const userMessage = message.trim();
+                setMessage('');
+
+                // Reset textarea height
+                if (messageInputRef.current) {
+                    messageInputRef.current.style.height = 'auto';
+                }
+
+                // Add user message
+                addMessage('user', userMessage);
+
+                // Expand interface after first message
+                if (!isExpanded) {
+                    setIsExpanded(true);
+                }
+
+                // Show AI loading
+                setAiLoading(true);
+
+                try {
+                    const token = localStorage.getItem('access_token');
+
+                    // Create conversation if needed
+                    let currentConvId = conversationId;
+                    if (!currentConvId) {
+                        const convResponse = await fetch('/conversations/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`,
+                            },
+                            body: JSON.stringify({
+                                title: 'LBOB Chat Session',
+                                job_id: activeJobId // Link to active job if available
+                            })
+                        });
+
+                        if (convResponse.ok) {
+                            const convData = await convResponse.json();
+                            currentConvId = convData.conversation_id;
+                            setConversationId(currentConvId);
+                        }
+                    }
+
+                    const response = await fetch(`/conversations/${currentConvId}/messages`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                        body: JSON.stringify({
+                            message_text: userMessage,
+                            is_solution: false
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        // Parse job info from AI response
+                        const jobInfo = parseJobInfoFromResponse(data.message_text);
+
+                        // Add AI response
+                        addMessage('ai', data.message_text, jobInfo);
+                    } else {
+                        const errorData = await response.json().catch(() => ({}));
+                        addMessage('ai', `Sorry, I had trouble processing that (${response.status}). Can you try again?`);
+                    }
+                } catch (err) {
+                    addMessage('ai', 'Connection error. Please check your network and try again.');
+                } finally {
+                    setAiLoading(false);
+                }
+            };
+
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                }
+            };
+
+            const switchToJob = (jobId) => {
+                setActiveJobId(jobId);
+                const job = jobTabs.find(tab => tab.job_id === jobId);
+                if (job) {
+                    setCurrentJob(job);
+                    setJobTabs(prev => prev.map(tab => ({
+                        ...tab,
+                        isActive: tab.job_id === jobId
+                    })));
+                }
+            };
+
+            // Attachment handling functions
+            const handleFileUpload = () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.pdf,.jpg,.jpeg,.png,.doc,.docx,.txt,.mp3,.wav,.mp4,.zip';
+                input.onchange = async (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        await uploadFile(file, 'document');
+                    }
+                };
+                input.click();
+            };
+
+            const handlePhotoCapture = () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.capture = 'environment'; // Use back camera on mobile
+                input.onchange = async (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        await uploadFile(file, 'photo');
+                    }
+                };
+                input.click();
+            };
+
+            const handleVoiceRecord = async () => {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert('Voice recording not supported in this browser');
+                    return;
+                }
+
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const mediaRecorder = new MediaRecorder(stream);
+                    const chunks = [];
+
+                    mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+                    mediaRecorder.onstop = async () => {
+                        const blob = new Blob(chunks, { type: 'audio/wav' });
+                        const file = new File([blob], `voice_${Date.now()}.wav`, { type: 'audio/wav' });
+                        await uploadFile(file, 'voice');
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+
+                    // Simple recording UI
+                    const stopRecording = () => {
+                        mediaRecorder.stop();
+                        document.removeEventListener('click', stopRecording);
+                        addMessage('system', '🎤 Voice recording stopped. Processing...');
+                    };
+
+                    addMessage('system', '🎤 Recording voice... Click anywhere to stop.');
+                    mediaRecorder.start();
+
+                    // Stop recording when user clicks anywhere
+                    setTimeout(() => {
+                        document.addEventListener('click', stopRecording, { once: true });
+                    }, 100);
+
+                } catch (err) {
+                    console.error('Voice recording error:', err);
+                    alert('Could not access microphone. Please check permissions.');
+                }
+            };
+
+            const uploadFile = async (file, type) => {
+                if (!conversationId) {
+                    addMessage('system', '❌ Please start a conversation first');
+                    return;
+                }
+
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('attached_to_table', 'conversations');
+                    formData.append('attached_to_id', conversationId);
+
+                    addMessage('system', `📎 Uploading ${type}...`);
+
+                    const token = localStorage.getItem('access_token');
+                    const response = await fetch('/attachments/upload', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        addMessage('system', `✅ ${type === 'voice' ? 'Voice message' : 'File'} uploaded: ${result.filename}`);
+
+                        // Add file context to next AI message
+                        const fileContext = `[File uploaded: ${result.filename} (${result.category})]`;
+                        addMessage('user', `${fileContext} Please analyze this ${type}.`);
+
+                        // Trigger AI response
+                        setTimeout(() => handleSendMessage(), 500);
+                    } else {
+                        const error = await response.json();
+                        addMessage('system', `❌ Upload failed: ${error.detail}`);
+                    }
+                } catch (err) {
+                    console.error('Upload error:', err);
+                    addMessage('system', '❌ Upload failed: Connection error');
+                }
+            };
+
+            // Check if already logged in
+            useEffect(() => {
+                const token = localStorage.getItem('access_token');
+                if (token) {
+                    setIsLoggedIn(true);
+                    addMessage('ai', "Welcome back! I'm LBOB, ready to help with your building safety needs!");
+                }
+            }, []);
+
+            if (!isLoggedIn) {
+                return e('div', null,
+                    // Background effects
+                    createNeuralNetwork(),
+                    createParticles(),
+
+                    e('div', { className: 'login-form' },
+                        e('h2', { className: 'login-title' }, 'CertaSite Access'),
+                        e('div', { className: 'lbob-preview' },
+                            e('img', { src: '/static/images/characters/LBOBAICharacter_ai.png', alt: 'LBOB Preview' }),
+                            e('div', null, e('strong', null, 'Meet LBOB!'), e('br'), 'Your AI Building Safety Assistant')
+                        ),
+                        error && e('div', { className: 'error' }, error),
+                        e('form', { onSubmit: handleLogin },
+                            e('input', {
+                                type: 'text',
+                                className: 'login-input',
+                                placeholder: 'Username',
+                                value: username,
+                                onChange: (e) => setUsername(e.target.value),
+                                disabled: loading
+                            }),
+                            e('input', {
+                                type: 'password',
+                                className: 'login-input',
+                                placeholder: 'Password',
+                                value: password,
+                                onChange: (e) => setPassword(e.target.value),
+                                disabled: loading
+                            }),
+                            e('button', {
+                                type: 'submit',
+                                className: 'login-button',
+                                disabled: loading
+                            }, loading ? 'Logging in...' : 'Enter LBOB\'s Lair')
+                        )
+                    )
+                );
+            }
+
+            // Create neural network background
+            const createNeuralNetwork = () => {
+                const nodes = [];
+                const connections = [];
+
+                for (let i = 0; i < 15; i++) {
+                    nodes.push(e('div', {
+                        className: 'neural-node',
+                        key: `node-${i}`,
+                        style: {
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            animationDelay: `${Math.random() * 3}s`
+                        }
+                    }));
+                }
+
+                for (let i = 0; i < 8; i++) {
+                    connections.push(e('div', {
+                        className: 'neural-connection',
+                        key: `connection-${i}`,
+                        style: {
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            width: `${50 + Math.random() * 200}px`,
+                            transform: `rotate(${Math.random() * 360}deg)`,
+                            animationDelay: `${Math.random() * 4}s`
+                        }
+                    }));
+                }
+
+                return e('div', { className: 'neural-network' }, ...nodes, ...connections);
+            };
+
+            // Create floating particles
+            const createParticles = () => {
+                const particles = [];
+                for (let i = 0; i < 20; i++) {
+                    particles.push(e('div', {
+                        className: 'particle',
+                        key: `particle-${i}`,
+                        style: {
+                            left: `${Math.random() * 100}%`,
+                            animationDelay: `${Math.random() * 8}s`,
+                            animationDuration: `${6 + Math.random() * 4}s`
+                        }
+                    }));
+                }
+                return e('div', { className: 'floating-particles' }, ...particles);
+            };
+
+            const formatTime = (date) => {
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            };
+
+            return e('div', null,
+                // Background effects
+                createNeuralNetwork(),
+                createParticles(),
+
+                // Main adaptive container
+                e('div', {
+                    className: `main-container ${isExpanded ? 'expanded-state' : 'initial-state'}`
+                },
+                    // LBOB Container (Left side)
+                    e('div', { className: 'lbob-container' },
+                        e('div', { className: 'welcome-message' },
+                            e('h1', { className: 'welcome-title' }, 'Welcome to LBOB\'s Lair'),
+                            e('p', { className: 'welcome-subtitle' }, 'Your AI Building Safety Assistant is ready to help!')
+                        ),
+                        e('div', { className: 'lbob-character' },
+                            e('img', {
+                                className: 'lbob-image',
+                                src: '/static/images/characters/LBOBAICharacter_ai.png',
+                                alt: 'LBOB - Your AI Safety Assistant'
+                            })
+                        )
+                    ),
+
+                    // Chat Container (Right side)
+                    e('div', { className: 'chat-container' },
+                        // Job Tabs
+                        jobTabs.length > 0 && e('div', {
+                            className: `job-tabs ${isExpanded ? 'visible' : ''}`
+                        },
+                            ...jobTabs.map(tab =>
+                                e('div', {
+                                    key: tab.job_id,
+                                    className: `job-tab ${tab.isActive ? 'active' : ''}`,
+                                    onClick: () => switchToJob(tab.job_id)
+                                }, `📋 ${tab.title}`)
+                            )
+                        ),
+
+                        // Job Context
+                        currentJob && e('div', {
+                            className: `job-context ${isExpanded ? 'visible' : ''}`
+                        },
+                            e('div', { className: 'job-title' },
+                                `🏢 ${currentJob.title || 'Current Job'}`
+                            ),
+                            e('div', { className: 'job-details' },
+                                currentJob.customer_name && e('div', { className: 'job-detail' },
+                                    e('span', null, '👤'), currentJob.customer_name
+                                ),
+                                currentJob.customer_address && e('div', { className: 'job-detail' },
+                                    e('span', null, '📍'), currentJob.customer_address
+                                ),
+                                currentJob.job_number && e('div', { className: 'job-detail' },
+                                    e('span', null, '🔢'), currentJob.job_number
+                                )
+                            )
+                        ),
+
+                        // Conversation History
+                        e('div', {
+                            className: `conversation-history ${isExpanded ? 'visible' : ''}`
+                        },
+                            ...messages.map(msg =>
+                                e('div', {
+                                    key: msg.id,
+                                    className: `message ${msg.sender}`
+                                },
+                                    e('div', { className: 'message-sender' },
+                                        msg.sender === 'user' ? 'You' : 'LBOB'
+                                    ),
+                                    e('div', { className: 'message-bubble' },
+                                        msg.text
+                                    ),
+                                    e('div', { className: 'message-time' },
+                                        formatTime(msg.timestamp)
+                                    )
+                                )
+                            ),
+                            aiLoading && e('div', { className: 'message ai' },
+                                e('div', { className: 'message-sender' }, 'LBOB'),
+                                e('div', { className: 'message-bubble' },
+                                    e('div', { className: 'loading-dots' },
+                                        e('div'), e('div'), e('div')
+                                    )
+                                )
+                            ),
+                            e('div', { ref: messagesEndRef })
+                        ),
+
+                        // Input Area
+                        e('div', { className: 'input-area' },
+                            e('div', { className: 'input-container' },
+                                e('textarea', {
+                                    ref: messageInputRef,
+                                    className: 'message-input',
+                                    placeholder: isExpanded
+                                        ? 'Continue your conversation with LBOB...'
+                                        : 'Ask LBOB about building safety, fire protection, or security systems...',
+                                    value: message,
+                                    onChange: handleInputChange,
+                                    onKeyPress: handleKeyPress,
+                                    rows: 1,
+                                    style: { height: 'auto' }
+                                }),
+                                e('div', { className: 'attachment-buttons' },
+                                    e('button', {
+                                        className: 'attachment-btn',
+                                        title: 'Upload File',
+                                        onClick: handleFileUpload
+                                    }, '📁'),
+                                    e('button', {
+                                        className: 'attachment-btn',
+                                        title: 'Voice Message',
+                                        onClick: handleVoiceRecord
+                                    }, '🎤'),
+                                    e('button', {
+                                        className: 'attachment-btn',
+                                        title: 'Take Photo',
+                                        onClick: handlePhotoCapture
+                                    }, '📷')
+                                ),
+                                e('button', {
+                                    className: 'send-button',
+                                    onClick: handleSendMessage,
+                                    disabled: !message.trim() || aiLoading
+                                }, 'Send')
+                            )
+                        )
+                    )
+                )
+            );
+        }
+
+        // Render the app
+        console.log('Rendering adaptive LBOB app...');
+        ReactDOM.render(e(LBOBApp), document.getElementById('root'));
+        console.log('Adaptive LBOB app rendered successfully!');
+    </script>
+</body>
+</html>

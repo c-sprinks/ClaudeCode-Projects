@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from config.database import get_db, engine
 from app.models import Base
-from app.routes import conversations, users, jobs, equipment, solutions, companies
+from app.routes import conversations, users, jobs, equipment, solutions, companies, attachments
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -36,6 +36,7 @@ app.include_router(jobs.router)
 app.include_router(equipment.router)
 app.include_router(solutions.router)
 app.include_router(companies.router)
+app.include_router(attachments.router)
 
 @app.get("/")
 async def root():
